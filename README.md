@@ -38,7 +38,27 @@ The [raw data source](https://divvy-tripdata.s3.amazonaws.com/index.html), strip
    - Removed classic bike rides that averaged more than 8.5 meters per second (19.0 mph)
    - Removed electric bike rides that averaged more than 11 meters per second (24.6 mph)
 
-## Analysis Summary
+## Analysis
+
+### Primary Focus
+
+The primary objective of this analysis is to identify high-potential conversion segments within the casual rider user base and design a targeted acquisition campaign to convert them to annual members. Marketing capital should be concentrated on low friction conversions, casual riders whose behavior patterns already mimic the more utility-drivin member behaviors.
+
+### Strategic Target Segments
+
+1) **Short-Duration Commuters:** 
+2) **Rush-Hour Commuters:**
+3) **Micro-Mobility Inland Corridor:**
+4) **Winter Riders:**
+
+### Biphasic Go-To-Market Campaign
+
+ * **Phase 1: Peak-Volume Acquisition (May-August)**
+   * **Objective:**
+   * **Tactics:** 
+ * **Phase 2: High Conversion Retention (December-February)** 
+   * **Objective:**
+   * **Tactics:** 
 
 Marketing should focus on targeting casuals that take rides:
 
