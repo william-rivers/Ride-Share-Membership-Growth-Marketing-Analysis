@@ -1709,7 +1709,23 @@ HAVING COUNT(*) > 5 --Drops some of the background noise;
 
 ### 5.2 Final Products
 
-NOT PUBLISHED ONLINE YET. NEED TO FIGURE OUT HOW. DO I NEED TO UPLOAD THE DATASETS AS WELL?
+I ran into an incredibly frustrating problem when uploading the charts to Tableau Public Online. They displayed very differently on the Desktop version and I was forced to resize and reformat every visualization. In the future the largest I will make my dashboard is is around 1320x820 pixels. Originally, it was 1641x854 because that fit the screen well on the Tableau Desktop and still allowed space for the story notes.
+
+<p align="center">
+  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/Dashboard1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
+    <img src="../assets/visualizations/dashboard_preview.png" alt="Ride-Share Marketing Dashboard" width="80%">
+  </a>
+  <br>
+  <em>Figure 1: Interactive Member Conversion Dashboard. Click the preview image to open the live view on Tableau Public.</em>
+</p>
+
+<p align="center">
+  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/Story1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
+    <img src="../assets/visualizations/dashboard_preview.png" alt="Ride-Share Marketing Dashboard" width="80%">
+  </a>
+  <br>
+  <em>Figure 1: Interactive Member Conversion Story. Click the preview image to open the live view on Tableau Public.</em>
+</p>
 
 Link to Dashboard
 Link to Story
