@@ -1709,34 +1709,141 @@ HAVING COUNT(*) > 5 --Drops some of the background noise;
 
 ### 5.2 Final Products
 
-I ran into an incredibly frustrating problem when uploading the charts to Tableau Public Online. They displayed very differently on the Desktop version and I was forced to resize and reformat every visualization. In the future the largest I will make my dashboard is is around 1320x820 pixels. Originally, it was 1641x854 because that fit the screen well on the Tableau Desktop and still allowed space for the story notes.
+I ran into an incredibly frustrating problem when uploading the charts to Tableau Public Online. They displayed very 
+differently on the Desktop version and I was forced to resize and reformat every visualization. In the future, the largest 
+I will make my dashboard is is around 1320x820 pixels. Originally, it was 1641x854 because that fit the screen well on 
+Tableau Desktop and still allowed space for the story notes.
 
+### Dashboard
 <p align="center">
   <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/Dashboard1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
-    <img src="../assets/visualizations/dashboard_preview.png" alt="Ride-Share Marketing Dashboard" width="80%">
+    <img src="/assets/ride_share_dashboard.png" alt="Ride-Share Marketing Dashboard" width="100%">
   </a>
   <br>
   <em>Figure 1: Interactive Member Conversion Dashboard. Click the preview image to open the live view on Tableau Public.</em>
 </p>
 
+### Story
 <p align="center">
   <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/Story1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
-    <img src="../assets/visualizations/dashboard_preview.png" alt="Ride-Share Marketing Dashboard" width="80%">
+    <img src="/assets/ride_share_story.png" alt="Ride-Share Marketing Story" width="100%">
   </a>
   <br>
-  <em>Figure 1: Interactive Member Conversion Story. Click the preview image to open the live view on Tableau Public.</em>
+  <em>Figure 2: Interactive Member Conversion Story. Click the preview image to open the live view on Tableau Public.</em>
 </p>
 
-Link to Dashboard
-Link to Story
+### Monthly Rides and Duration
 
-### 5.3 Individual Charts
+<p align="center">
+  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/MonthlyRidesandDuration?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
+    <img src="/assets/monthly_rides_and_duration.png" alt="Ride-Share Monthly Rides and Duration" width="50%">
+  </a>
+  <br>
+  <em>Figure 3: Interactive Combo Chart of Rides and Duration. Click the preview image to open the live view on Tableau Public.</em>
+</p>
 
-Heatmap and other charts individually
+### Rideable Type by Season
+<p align="center">
+  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/RideableTypebySeasons?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
+    <img src="/assets/rideable_type_by_season.png" alt="Ride-Share Rideable Type by Season" width="35%">
+  </a>
+  <br>
+  <em>Figure 4: Interactive Stacked Bar Chart of Rideable Type by Season. Click the preview image to open the live view on Tableau Public.</em>
+</p>
 
+### Casual Time Heatmap
+
+<p align="center">
+  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/CasualTimeHeatmap?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
+    <img src="/assets/casual_time_heatmap.png" alt="Ride-Share Casual Time Heatmap" width="40%">
+  </a>
+  <br>
+  <em>Figure 5: Interactive Heatmap of Casual Times. Click the preview image to open the live view on Tableau Public.</em>
+</p>
+
+### Member Time Heatmap
+
+<p align="center">
+  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/MemberTimeHeatmap?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
+    <img src="/assets/member_time_heatmap.png" alt="Ride-Share Member Time Heatmap" width="40%">
+  </a>
+  <br>
+  <em>Figure 6: Interactive Heatmap of Member Times. Click the preview image to open the live view on Tableau Public.</em>
+</p>
+
+### Casual Geo Heatmap
+
+<p align="center">
+  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/CasualGeoHeatmap?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
+    <img src="/assets/casual_geo_heatmap.png" alt="Ride-Share Casual Ride Heatmap" width="60%">
+  </a>
+  <br>
+  <em>Figure 7: Interactive Heatmap of Casual Rides. Click the preview image to open the live view on Tableau Public.</em>
+</p>
+
+### Member Geo Heatmap
+
+<p align="center">
+  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/MemberGeoHeatmap?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
+    <img src="/assets/member_geo_heatmap.png" alt="Ride-Share Member Ride Heatmap" width="60%">
+  </a>
+  <br>
+  <em>Figure 8: Interactive Heatmap of Member Rides. Click the preview image to open the live view on Tableau Public.</em>
+</p>
+
+### High ROI Stations
+
+<p align="center">
+  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/HighROIStations?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
+    <img src="/assets/high_roi_stations.png" alt="Ride-Share High ROI Stations Mapped" width="60%">
+  </a>
+  <br>
+  <em>Figure 9: Interactive Map of Stations with High ROI Potenial. Click the preview image to open the live view on Tableau Public.</em>
+</p>
+
+### Weekends/Weekdays
+
+<p align="center">
+  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/WeekendWeekday?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
+    <img src="/assets/weekend_weekday.png" alt="Ride-Share Weekend Vs Weekday Comparison" width="60%">
+  </a>
+  <br>
+  <em>Figure 10: Interactive Weekend vs Weekday Bar Chart. Click the preview image to open the live view on Tableau Public.</em>
+</p>
 ---
 
 ## Step 6: Act
 
 ### 6.1 Key Differences
+
+**Members**
+1) Ride Duration: Lower average than casuals year-long
+   - Highest difference between May and September
+   - More consistent difference on classic bikes
+   - Longer duration than casuals on electric bikes during Winter
+2) Season: Higher proportion of the rides between November and April
+    - Most exaggerated during Winter (~80% of total rides)
+    - Doubly true when looking at only classic bike rides and/or only weekdays
+3) Day Type: Favor weekdays more than weekends
+   - Main difference from casuals is between 7 and 9 am
+   - 6 through 10 am encompasses the full band of increased acitivty
+   - The stronger band of usage between 4 and 6 pm is similar to casuals
+4) Geography: Rides tend to be more spread out across the full service range
+   - Especially true on weekends
+   - Favor inland locations slightly more heavily than casuals
+5) Overall, less variation in usage
+   - Likely translates to persistently following the identified patterns
+   - Would need the ability to track individuals to further examine
+
+**Casuals**
+1) Ride Duration: Higher average ride durations
+    - Duration rapidly increases as weather warms
+2) Higher proportion of the rides between May and October
+    - Shift toward using electric bikes more often during Winter
+3) Favor weekends over weekdays
+    - Classic bike usage roughly doubles on weekends
+4) Rides tend to be more concentrated in the same geographic area
+5) Overall, large amounts of variation based on many factors
+
+### 6.2 Recommendations
 
