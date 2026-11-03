@@ -17,22 +17,29 @@ Accelerate revenue and annual membership growth by analyzing aggregate trip metr
 ## Data and Methodology
 
 ### Data Source
-The [raw data source](https://divvy-tripdata.s3.amazonaws.com/index.html), stripped of personal identifying information, is publicly available where Divvy, the real-world counterpart to the fictional company, publishes their records from June 1, 2020 to present. It is available through Motivate International Inc. under this [license](https://divvybikes.com/data-license-agreement). The raw data used in this project is also available in the data folder of this repo.
+
+The [raw data source](https://divvy-tripdata.s3.amazonaws.com/index.html), stripped of personal identifying information, is publicly available where Divvy, the real-world counterpart to the fictional company, publishes their records from June 1, 2020 to present. It is available through Motivate International Inc. under this [license](https://divvybikes.com/data-license-agreement). The raw data used in this project specifically is also available in a zipped format through this [link](https://drive.google.com/file/d/15kq_08r88PqiFFRycjoh1DGF9TfPrnz5/view?usp=sharing).
 
 ### Primary Tools
-- SQL (BigQuery)
-- Tableau
+
+- Google BigQuery (SQL): Utilized as the primary cloud data warehouse to aggregate, clean, and query historical transactional logs.
+- Tableau Public: Employed to build interactive charts, dashboards, and executive storyboards.
 
 ### Secondary Tools
-- Python
-- Google Sheets
+
+- Python: Utilized locally for raw data preprocessing (chunking for file resizing) to optimize cloud data warehouse upload efficiency.
+- Markdown: Used to document the analytical log and maintain tracking notes.
+- Google Sheets: 
 
 ## Data Cleaning
 
-1) Removed Duplicate Records
-2) Handling Nulls
-   - Filled several thousand null station names and ids with the nearest station within 50 meters
-3) Checking Sanity
+The executable queries are located in the [/scripts_and_queries/02_data_cleaning.sql](./scripts_and_queries/02_data_cleaning.sql) file. The results and thought process can be found in the [/notebooks/analytical-log.md](./notebooks/analytical-log.md##-Step-3:-Process) file.
+
+### Core Data Quality Operations
+
+1) Deduplication: Identified and removed using GROUP BY and HAVING
+2) Resolved Incomplete Records: Filled several thousand null station names and ids with the nearest station within 50 meters
+3) Verified Data Sanity:
    - Removed rides with negative durations or zero duration
    - Removed rides with 0-2 min durations if they did not travel at least 50 meters or change stations
    - Removed classic bike rides that averaged more than 8.5 meters per second (19.0 mph)
@@ -40,38 +47,67 @@ The [raw data source](https://divvy-tripdata.s3.amazonaws.com/index.html), strip
 
 ## Analysis
 
+The executable queries are located in the [/scripts_and_queries/03_business_analysis.sql](./scripts_and_queries/03_business_analysis.sql) file. The results and thought process can be found in the [/notebooks/analytical-log.md](./notebooks/analytical-log.md##-Step-4:-Analyze) file.
+
 ### Primary Focus
 
-The primary objective of this analysis is to identify high-potential conversion segments within the casual rider user base and design a targeted acquisition campaign to convert them to annual members. Marketing capital should be concentrated on low friction conversions, casual riders whose behavior patterns already mimic the more utility-drivin member behaviors.
+Rather than deploying a broad marketing campaign across the entire casual footprint, this analysis focuses on identifying casual rides whose usage patterns already mimic the more utility-driven member behaviors. Targeting these low-friction conversions maximizes campaign efficiency.
 
-### Strategic Target Segments
+### Behavioral Profiles
 
-1) **Short-Duration Commuters:** 
-2) **Rush-Hour Commuters:**
-3) **Micro-Mobility Inland Corridor:**
-4) **Winter Riders:**
+**Members**
+1) Ride Duration: Lower average than casuals year-long
+   - Greatest difference with casuals between May and September
+   - More consistent difference on classic bikes
+   - Longer duration than casuals on electric bikes during Winter
+2) Season: Higher proportion of the rides between November and April
+    - Most exaggerated during Winter (~80% of monthly rides)
+    - Doubly true when looking at only classic bike rides or only weekdays
+3) Day Type: Favor weekdays more than weekends
+   - Especially high usage during traditional rush hours (6:00 AM - 10:00 AM and 3:00 PM - 7:00 PM)
+4) Geography: Rides tend to be more spread out across the full service range
+   - Especially true on weekends
+   - Favor inland locations more than casuals
+5) Overall: Very little variation in usage patterns
 
-### Biphasic Go-To-Market Campaign
+**Casuals**
+1) Ride Duration: Higher average year-long
+   - Duration rapidly increases as weather warms and rapidly drops as weather cools
+2) Season: Higher proportion of the rides between May and October
+   - Shift toward using electric bikes more often during Winter
+3) Day Type: Favor weekends over weekdays
+   - Weekdays only show rides clustered during the evening rush hour (3:00 PM - 7:00 PM)
+   - Classic bike usage roughly doubles on weekends
+4) Geography: Rides tend to be more concentrated in the same geographic area
+   - Coastal areas in particular are highly popular
+6) Overall: Large amounts of variation in usage pattern based on many factors
 
- * **Phase 1: Peak-Volume Acquisition (May-August)**
-   * **Objective:**
-   * **Tactics:** 
- * **Phase 2: High Conversion Retention (December-February)** 
-   * **Objective:**
-   * **Tactics:** 
+#### Low Friction Target Segments
 
-Marketing should focus on targeting casuals that take rides:
+1) **The Short-Duration Commuters:** Annual members heavily favor taking short-duration, utility-driven rides. A significant cohort of casual riders mirrors this behavior, which marks them as likely converts.
+2) **The Rush-Hour Commuters:** Temporal analysis shows that although the highest casual usage is on the weekends, a distinct segment of casual rides occur during traditional weekday rush hours (6:00 AM - 10:00 AM and 3:00 PM - 7:00 PM), matching member peak usage hours. The member-dominated morning rush identifies likely converts and the shared evening rush captures the highest traffic periods.
+3) **The Inland Corridor:** Geographic mapping isolates a divide between members and casual users: casual rides concentrate more heavily along the coast while member rides concentrate more heavily inland. Analysis identified [24 stations](./notebooks/analytical-log.md###-4.6-Popular-Station-Analysis) that are member-dominated despite high popularity with casual users.
+4) **The Seasonal Pivot:** Casual riders still active during winter months (December-February) are displaying member-like behavior since casual rides dropped to 1/10th of their peak usage during the winter months while member rides only dropped to 1/4th of their peak. Additionally, while the rest of the year matches the standard member ratio of 1:2 classic-to-electric rides, winter casual usage shifts to a 1:3 ratio. This indicates a high willingness to pay a premium for speed and cold-weather convenience.
 
-1) with shorter durations
-   - Especially May-September where the casual duration is highest
-2) during weekdays
-   - High focus on rides starting 6-10 am which is member-dominated
-   - Slight focus on rides starting 3-7 pm which is used heavily by both groups
-3) during the Winter
-   - Slight focus on classic bike rides which are used more commonly by members during Winter
-4) from/to stations that fall into member dominated areas
+### Campaign Timing
 
-The marketing campaign should be biphasic. Phase 1 runs between May and August when there are more casuals active even though they are not displaying "member-like" behavior. During this phase, we primarily target the users behaving most like members and emphasize the potential savings at even light use for unlikely converts. Phase 2 runs between December and February when there is low casual activity but it is much more consistent with member behavior. These are all likely converts. In both phases, we should combine advertising through the app and OOH marketing at key stations to maximize exposure.
+Peak volume among both annual members and casual users occurs May-October with over 70% of all rides and over 80% of casual rides happening during this window. The number of rides per month starts to fall in September but doesn't drop below 600,000 rides until November. This is an optimal time for broad reach.
+
+The extreme drop in casual usage during the winter months identifies a lower volume but also lower friction segment for targeted marketing.
+
+### Conversion Triggers
+
+**Membership Annual Profit Point**
+| Ride Duration | Single, classic | Single, electric | Day Pass, both  |
+|:-------------:|:---------------:|:----------------:|:---------------:|
+| 10 min        | 48 rides/year   | 27 rides/year    | 8 passes/year   |
+| 15 min        | 36 rides/year   | 19 rides/year    | 8 passes/year   |
+
+**Membership Monthly Profit Point**
+| Ride Duration | Single, classic | Single, electric | Day Pass, both  |
+|:-------------:|:---------------:|:----------------:|:---------------:|
+| 10 min        | 4 rides/month   | 3 rides/month    | <1 pass/month   |
+| 15 min        | 3 rides/month   | 2 rides/month    | <1 pass/month   |
 
 ## Supporting Visualizations
 
@@ -93,14 +129,63 @@ The marketing campaign should be biphasic. Phase 1 runs between May and August w
 
 ## Recommendations
 
+### Biphasic Go-To-Market Campaign
+
+ - **Phase 1: Peak-Volume Acquisition (May-August)**
+   - **Objective:** Capture the massive summer surge of casual riders by separating high-utility riders from recreational users.
+ - **Phase 2: High-Conversion Retention (December-February)** 
+   - **Objective:** Capture the lower volume of casual users who display the strongest baseline alignment with annual member habits.
+
+#### Implement In-App Loss Aversion Triggers
+
+-  **General:** A membership would have saved you $X.XX on this ride
+-  **General:** This month you would have saved $X.XX with a membership
+-  **General:** Did you know the membership costs less than $12/month?
+-  **Shorter Classic Rides:** Membership costs less per month than four 10 minute rides/month on classic bikes
+-  **Longer Classic Rides:** Membership costs less per month than three 15 minute rides/month on classic bikes
+-  **Shorter Electric Rides:** Membership costs less per month than three 10 minute rides/month on electric bikes
+-  **Longer Electric Rides:** Membership costs less per month than two 15 minute rides/month on electric bikes
+-  **Day Passes:** Did you know the annual membership costs less than 8 Day Passes?
+-  **Classic Ride Under 45 Minutes:** This ride would be free with a membership!
+
+#### Deploy Localized Out-of-Home (OOH) Station Marketing
+
+Establish localized brand equity by deploying physical marketing (e.g. vinyl station wraps, dock signage, or digital terminal displays) at the 24 key stations identified during the analysis. 
+
+### Offer Dynamic Membership Trial Discounts
+
+Point-based system to identify casual users most likely to convert and lowering their barrier to conversion. MAY NEED TO LIMIT THIS IDEA TO THE WINTER TO AVOID LARGE SUMMER LOSSES
+
+Example Algorithm: 
+- Ride duration < 15 minutes: 1 pt
+    - Ride duration < 10 minutes: 0.5 pt bonus
+    - Between May and September: 0.5 pt bonus
+- Between November and April: 1 pt
+    - December to Februrary: 0.5 pt bonus
+    - Using an electric bike: 0.5 pt bonus
+- Weekday: 0.5 pt
+    - 6-10 a.m. 1 pt bonus
+- Consistency (tracking individuals' behaviors)
+    - 4+ rides this month: 1 pt
+    - 5-9 rides with 2+ pts last month: x2 pts this month
+    - 10+ rides with 1.5+ pts last month: x2 pts this month
+
+<3 points: no trial month offered
+3-5 points: 10% discount on 1 month trial membership ($10.79 for the month)
+5+ points: 20% discount on 1 month trial membership ($9.59 for the month)
 
 
 ### Limitations
 
-Only have access to aggregate data and are not able to track individuals. Members displayed very consistent behavior and I suspect that stays true at the individual level. 
+* No Customer IDs: The dataset lacks the unique customer IDs required to track individuals longitudinal usage.
+* No Demographic Data:  The dataset lacks the demographic profiles required to track cohorts of users.
+* Financial Redaction: The dataset lacks exact pricing tables, dynamic surge rates, and operational costs required to determine a precise Return on Investment (ROI) forecast for the campaign.
 
 ### Next Steps
 
- 
- 
-This project dataset was suggested by the Google Data Analytics Capstone project.
+1) A/B Testing: Launch a small-scale pilot of the in-app loss aversion triggers to test conversion lift before global deployment.
+2) First-Party Surveys: Deploy brief, incentivized in-app surveys to better understand blocks preventing membership acquisition.
+   - Example Incentive: One ride at membership pricing
+
+  
+*This project dataset was suggested by the Google Data Analytics Certificate as part of the capstone project.
