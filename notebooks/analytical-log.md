@@ -955,13 +955,13 @@ This is likely due to the fact that electric bikes are over twice as expensive f
 other words, the members keep their usual economic, utilitarian usage while casuals adopt that same mindset 
 due to the higher cost.
 
-**Membership Annual Breakeven Point**
+**Membership Annual Profit Point**
 | Ride Duration | Single, classic | Single, electric | Day Pass, both  |
 |:-------------:|:---------------:|:----------------:|:---------------:|
 | 10 min        | 48 rides/year   | 27 rides/year    | 8 passes/year   |
 | 15 min        | 36 rides/year   | 19 rides/year    | 8 passes/year   |
 
-**Membership Monthly Breakeven Point**
+**Membership Monthly Profit Point**
 | Ride Duration | Single, classic | Single, electric | Day Pass, both  |
 |:-------------:|:---------------:|:----------------:|:---------------:|
 | 10 min        | 4 rides/month   | 3 rides/month    | <1 pass/month   |
@@ -1340,7 +1340,7 @@ Members consistently chose electric bikes about twice as often as classic bikes 
 had a similar ratio during the Summer and Autumn, but chose electric bikes a little less than 3 times more 
 often as classic bikes during the Winter and Spring.
 
-### 4.6 Station Analysis
+### 4.6 Popular Station Analysis
 
 ```sql
 --Determine the most used stations for each user type
@@ -1573,6 +1573,8 @@ Only two stations from the member top 10 list are not included, 5th place CHI005
 both cases, these stations were not popular enough with casuals to satisfy the criteria for high ROI. This 
 table was downloaded as a csv with the intention of using it to create a map of high ROI stations.
 
+### 4.7 Potential New Station Analysis
+
 In order to group the locations of abandoned bikes and identify strong areas for expansion that could be used 
 to recruit more casuals, I used BigQuery's ST_CLUSTERDBSCAN function but the millions of points overwhelmed 
 the memory allotment for the task. In response, I used geohashing to pre-aggregate the points and previewed 
@@ -1634,7 +1636,7 @@ Filtering for any grids that have at least 3 unique coordinates gave no results.
 to 2 decimals creates grids approximately one square kilometer in area and there is unrealistically large volume 
 in small areas, the data is not detailed enough to identify new station possibilities.
 
-### 4.7 Summary/Notable Insights
+### 4.8 Summary/Notable Insights
 
 Marketing should focus on targeting casuals that take rides:
 
@@ -1644,7 +1646,7 @@ Marketing should focus on targeting casuals that take rides:
    - Heavy focus on rides between 6-9 am time frame which is dominated
    - Slight focus on the 4-6 pm time frame which is used heavy by both groups
 3) during the Winter
-   - Slight focus on classic bike rides which are used more commonly by members during Winter
+   - Slight focus on electric bike rides which are used more commonly by casuals during Winter (willing to pay a premium for convenience)
 4) from/to stations that fall into member dominated areas
 
 A major finding was that members are very consistent with their usage as a group. If I were able to track specific 
@@ -1818,32 +1820,30 @@ Tableau Desktop and still allowed space for the story notes.
 
 **Members**
 1) Ride Duration: Lower average than casuals year-long
-   - Highest difference between May and September
+   - Greatest difference with casuals between May and September
    - More consistent difference on classic bikes
    - Longer duration than casuals on electric bikes during Winter
 2) Season: Higher proportion of the rides between November and April
-    - Most exaggerated during Winter (~80% of total rides)
-    - Doubly true when looking at only classic bike rides and/or only weekdays
+    - Most exaggerated during Winter (~80% of monthly rides)
+    - Doubly true when looking at only classic bike rides or only weekdays
 3) Day Type: Favor weekdays more than weekends
-   - Main difference from casuals is between 7 and 9 am
-   - 6 through 10 am encompasses the full band of increased acitivty
-   - The stronger band of usage between 4 and 6 pm is similar to casuals
+   - Especially high usage during traditional rush hours (6:00 AM - 10:00 AM and 3:00 PM - 7:00 PM)
 4) Geography: Rides tend to be more spread out across the full service range
    - Especially true on weekends
-   - Favor inland locations slightly more heavily than casuals
-5) Overall, less variation in usage
-   - Likely translates to persistently following the identified patterns
-   - Would need the ability to track individuals to further examine
+   - Favor inland locations more than casuals
+5) Overall: Very little variation in usage patterns
 
 **Casuals**
-1) Ride Duration: Higher average ride durations
-    - Duration rapidly increases as weather warms
-2) Higher proportion of the rides between May and October
-    - Shift toward using electric bikes more often during Winter
-3) Favor weekends over weekdays
-    - Classic bike usage roughly doubles on weekends
-4) Rides tend to be more concentrated in the same geographic area
-5) Overall, large amounts of variation based on many factors
+1) Ride Duration: Higher average year-long
+   - Duration rapidly increases as weather warms and rapidly drops as weather cools
+2) Season: Higher proportion of the rides between May and October
+   - Shift toward using electric bikes more often during Winter
+3) Day Type: Favor weekends over weekdays
+   - Weekdays only show rides clustered during the evening rush hour (3:00 PM - 7:00 PM)
+   - Classic bike usage roughly doubles on weekends
+4) Geography: Rides tend to be more concentrated in the same geographic area
+   - Coastal areas in particular are highly popular
+6) Overall: Large amounts of variation in usage pattern based on many factors
 
 ### 6.2 Recommendations
 
