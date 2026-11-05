@@ -82,7 +82,7 @@ Rather than deploying a broad marketing campaign across the entire casual footpr
    - Coastal areas in particular are highly popular
 6) Overall: Large amounts of variation in usage pattern based on many factors
 
-#### Low Friction Target Segments
+### Low Friction Target Segments
 
 1) **The Short-Duration Commuters:** Annual members heavily favor taking short-duration, utility-driven rides. A significant cohort of casual riders mirrors this behavior, which marks them as likely converts.
 2) **The Rush-Hour Commuters:** Temporal analysis shows that although the highest casual usage is on the weekends, a distinct segment of casual rides occur during traditional weekday rush hours (6:00 AM - 10:00 AM and 3:00 PM - 7:00 PM), matching member peak usage hours. The member-dominated morning rush identifies likely converts and the shared evening rush captures the highest traffic periods.
@@ -154,26 +154,40 @@ Establish localized brand equity by deploying physical marketing (e.g. vinyl sta
 
 ### Offer Dynamic Membership Trial Discounts
 
-Point-based system to identify casual users most likely to convert and lowering their barrier to conversion. MAY NEED TO LIMIT THIS IDEA TO THE WINTER TO AVOID LARGE SUMMER LOSSES
+Establish a system to identify casual users most likely to convert and lower their barrier to conversion for the new year by offering a small discounted trial. At the beginning of the year, people chose new habits or goals often related to health and exercise. Lowering the barrier encourages people to trial a healthy mode of transportation or exercise.
 
-Example Algorithm: 
-- Ride duration < 15 minutes: 1 pt
-    - Ride duration < 10 minutes: 0.5 pt bonus
-    - Between May and September: 0.5 pt bonus
-- Between November and April: 1 pt
-    - December to Februrary: 0.5 pt bonus
-    - Using an electric bike: 0.5 pt bonus
-- Weekday: 0.5 pt
-    - 6-10 a.m. 1 pt bonus
-- Consistency (tracking individuals' behaviors)
-    - 4+ rides this month: 1 pt
-    - 5-9 rides with 2+ pts last month: x2 pts this month
-    - 10+ rides with 1.5+ pts last month: x2 pts this month
+Example Algorithm: Points earned per ride and aggregated over the month 
+- Ride Duration
+   - Duration > 45 minutes: -1 pt
+   - 15 < duration <= 45 minutes: 0 pt
+   - 10 < duration <= 15 minutes: 1 pt
+   - Duration <= 10 minutes: 1.5 pt
+- Season
+   - November, March, or April: 0.5 pt
+   - December, January, or February: 1 pt
+   - May-September and duration < 15 minutes: 0.5 pt
+- Day Type
+   - Weekday and 6-10 a.m. start: 1.5 pt
+   - Weekday and 3-7 p.m. start: 1 pt
+   - Weekday and other time: 0.5 pt
+   - Weekend: 0 pt
+- Rideable Type
+   - November-April and electric: 0.5 pt
+- Geography
+   - Starts at a target station: 1 pt
+   - Ends at a target station: 1 pt
+   - Starts at an anti-target station: -1 pt
+   - Ends at an anti-target station: -1 pt
+   - Start station = end station: -1 pt
+- Consistency (tracking individuals' behavior)
+   - 3+ rides with 2+ pts last month: x1.5 pts
+   - 3+ rides with 3+ pts last month: x2 pts
 
-<3 points: no trial month offered
-3-5 points: 10% discount on 1 month trial membership ($10.79 for the month)
-5+ points: 20% discount on 1 month trial membership ($9.59 for the month)
+<6 points: No trial month offered
+6-14 points: 20% discount on 1 month trial membership ($9.59 for the month)
+15+ points: 50% discount on 1 month trial membership ($6.00 for the month)
 
+Additional analysis is needed to identify whether this promotion should be limited to the winter phase. If the high volume of casual summer rides represents repeat customers, it could lead to a notable drop in summer revenue from casuals using the discounted trial without intending to purchase an annual membership. If the high volume is mostly from unique users, the promotion is unlikely to cut into revenue severely.
 
 ### Limitations
 
@@ -183,8 +197,9 @@ Example Algorithm:
 
 ### Next Steps
 
-1) A/B Testing: Launch a small-scale pilot of the in-app loss aversion triggers to test conversion lift before global deployment.
-2) First-Party Surveys: Deploy brief, incentivized in-app surveys to better understand blocks preventing membership acquisition.
+1) User Tracking: Identify whether high summer casual usage is driven by repeat users or unique users
+2) A/B Testing: Launch a small-scale pilot of the in-app loss aversion triggers to test conversion lift before global deployment.
+3) First-Party Surveys: Deploy brief, incentivized in-app surveys to better understand blocks preventing membership acquisition.
    - Example Incentive: One ride at membership pricing
 
   
