@@ -1536,42 +1536,164 @@ WHERE s.casual_rk <= 50
 ORDER BY mem_cas_ratio DESC --Highest difference first;
 ```
 
-| station_id | lat     | lng      | casual_rk | casual_rides | member_rk | member_rides | mem_cas_ratio  |
-|------------|---------|----------|-----------|--------------|-----------|--------------|----------------|
-| CHI00299   | 41.8891 | -87.6385 | 23        | 16082        | 1         | 52598        | 3.27           |
-| CHI00233   | 41.8824 | -87.6412 | 38        | 12643        | 4         | 40778        | 3.23           |
-| CHI00498   | 41.8824 | -87.6398 | 32        | 13798        | 2         | 44024        | 3.19           |
-| CHI01772   | 41.8966 | -87.6286 | 28        | 14173        | 3         | 41180        | 2.91           |
-| CHI00517   | 41.8887 | -87.6444 | 46        | 11431        | 16        | 30549        | 2.67           |
-| CHI00294   | 41.8948 | -87.6344 | 29        | 14094        | 10        | 35515        | 2.52           |
-| CHI00540   | 41.9032 | -87.6343 | 25        | 15786        | 7         | 38054        | 2.41           |
-| CHI00281   | 41.903  | -87.6313 | 21        | 16387        | 6         | 38133        | 2.33           |
-| CHI00332   | 41.8899 | -87.6343 | 34        | 13554        | 11        | 31332        | 2.31           |
-| CHI00430   | 41.9455 | -87.6464 | 44        | 11627        | 30        | 26881        | 2.31           |
-| CHI00306   | 41.899  | -87.6299 | 33        | 13616        | 19        | 28881        | 2.12           |
-| CHI00524   | 41.8672 | -87.626  | 43        | 11646        | 39        | 24469        | 2.1            |
-| CHI00396   | 41.9121 | -87.6347 | 16        | 18205        | 8         | 37956        | 2.08           |
-| CHI00390   | 41.9376 | -87.6441 | 45        | 11525        | 42        | 23903        | 2.07           |
-| CHI00353   | 41.9402 | -87.6529 | 35        | 13539        | 25        | 27694        | 2.05           |
-| CHI00345   | 41.8847 | -87.6195 | 31        | 13969        | 29        | 26973        | 1.93           |
-| CHI00330   | 41.8926 | -87.6173 | 24        | 15825        | 22        | 28450        | 1.8            |
-| CHI00295   | 41.8939 | -87.6299 | 36        | 13498        | 41        | 23917        | 1.77           |
-| CHI00474   | 41.9183 | -87.6363 | 13        | 18799        | 17        | 30409        | 1.62           |
-| CHI00358   | 41.8908 | -87.6317 | 26        | 15559        | 38        | 24542        | 1.58           |
-| CHI00279   | 41.8908 | -87.6186 | 20        | 16791        | 35        | 25296        | 1.51           |
-| CHI00413   | 41.9157 | -87.6346 | 11        | 19405        | 20        | 28821        | 1.49           |
-| CHI00313   | 41.8915 | -87.6268 | 15        | 18575        | 34        | 25669        | 1.38           |
-| CHI01677   | 41.884  | -87.6247 | 14        | 18674        | 44        | 23435        | 1.25           |
+This identified 24 stations that I initially intended to use as the stations with the highest potential for 
+out-of-home (OOH) marketing ROI. To be included, stations needed to appear in both top 50 lists and have more 
+member rides than casual rides.  Only two stations from the member top 10 list were not included, 5th place 
+CHI00509 and 9th place CHI01091. In both cases, these stations were not popular enough with casuals to satisfy 
+the criteria for large market size.
 
-These 24 stations have highest potential for out-of-home (OOH) marketing ROI. The stations needed to be high 
-volume for both members and casuals so I know that there are plenty of casuals for conversion but members also 
-use it extensively. I decided to add the requirement that the station have a higher volume of members than 
-casuals to limit the selection to where casuals are behaving like members. I didn't want to include stations 
-where members are the minority and therefore behaving like casuals.
+I then realized that I should include the opposite, stations that are strongly pro-casual. In the process, I 
+also refined my definition of what should qualify as a station to target for marketing. Target stations (high 
+ROI) are now defined as those with a member/casual ratio > 1.2 (to maintain the member dominated nature) and 
+over 10,000 annual casual rides (to maintain a large market size). Anti-Target stations (low ROI) are defined 
+as those with a casual/member ratio > 2 (highly casual dominated) and over 3,000 annual rides (to cut out 
+background noise).
 
-Only two stations from the member top 10 list are not included, 5th place CHI00509 and 9th place CHI01091. In 
-both cases, these stations were not popular enough with casuals to satisfy the criteria for high ROI. This 
-table was downloaded as a csv with the intention of using it to create a map of high ROI stations.
+```sql
+--Identify high and low ROI stations
+--This table will be saved and used to generate a map of these stations' locations 
+WITH src AS (
+  SELECT *
+  FROM (
+  SELECT member_casual, start_station_id AS station_id, start_lat AS lat, start_lng AS lng
+  FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
+  WHERE start_station_id IS NOT NULL
+  UNION ALL
+  SELECT member_casual, end_station_id AS station_id, end_lat AS lat, end_lng AS lng
+  FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
+  WHERE end_station_id IS NOT NULL
+  )
+), --Data source for other CTEs
+
+all_rk AS (
+  SELECT
+    member_casual,
+    station_id,
+    COUNT(*) AS num_rides,
+    DENSE_RANK() OVER(PARTITION BY member_casual ORDER BY COUNT(*) DESC) AS station_rk
+    -- Dense rank to avoid ties
+  FROM src
+  GROUP BY member_casual, station_id
+), --Build the full list of casual and member ranks
+
+split_rk AS (
+  SELECT
+    station_id,
+    MAX(CASE WHEN member_casual = 'casual' THEN station_rk END) AS casual_rk,
+    MAX(CASE WHEN member_casual = 'casual' THEN num_rides END) AS casual_rides,
+    MAX(CASE WHEN member_casual = 'member' THEN station_rk END) AS member_rk,
+    MAX(CASE WHEN member_casual = 'member' THEN num_rides END) AS member_rides,
+  FROM all_rk
+  GROUP BY station_id
+), --Pivot so that casual and member rank/rides are their own columns
+
+geo AS (
+  SELECT
+    station_id,
+    ROUND(AVG(lat), 4) AS lat,
+    ROUND(AVG(lng), 4) AS lng
+  FROM src
+  GROUP BY station_id
+) --Find the average coordinate for each station
+
+SELECT --Build list of high ROI stations
+  'Target Station' AS station_type,
+  s.station_id,
+  g.lat,
+  g.lng,
+  s.casual_rk,
+  s.casual_rides,
+  s.member_rk,
+  s.member_rides,
+  ROUND(SAFE_DIVIDE(s.member_rides, s.casual_rides), 2) AS mem_cas_ratio
+FROM split_rk s
+LEFT JOIN geo g
+  ON s.station_id = g.station_id
+WHERE SAFE_DIVIDE(s.member_rides, s.casual_rides) > 1.2
+  AND s.casual_rides > 10000
+
+UNION ALL
+
+SELECT --Build list of low ROI stations
+  'Anti-Target Station' AS station_type,
+  s.station_id,
+  g.lat,
+  g.lng,
+  s.casual_rk,
+  s.casual_rides,
+  s.member_rk,
+  s.member_rides,
+  ROUND(SAFE_DIVIDE(s.member_rides, s.casual_rides), 2) AS mem_cas_ratio
+FROM split_rk s
+LEFT JOIN geo g
+  ON s.station_id = g.station_id
+WHERE SAFE_DIVIDE(s.casual_rides, s.member_rides) > 2 
+  AND (s.member_rides + s.casual_rides) > 3000
+ORDER BY mem_cas_ratio DESC --Highest difference first;
+```
+
+| station_type        | station_id | lat     | lng      | casual_rk | casual_rides | member_rk | member_rides | mem_cas_ratio  |
+|---------------------|------------|---------|----------|-----------|--------------|-----------|--------------|----------------|
+| Target Station      | CHI01091   | 41.8783 | -87.641  | 55        | 10569        | 9         | 36795        | 3.48           |
+| Target Station      | CHI00299   | 41.8891 | -87.6385 | 23        | 16082        | 1         | 52598        | 3.27           |
+| Target Station      | CHI00233   | 41.8824 | -87.6412 | 38        | 12643        | 4         | 40778        | 3.23           |
+| Target Station      | CHI00498   | 41.8824 | -87.6398 | 32        | 13798        | 2         | 44024        | 3.19           |
+| Target Station      | CHI01772   | 41.8966 | -87.6286 | 28        | 14173        | 3         | 41180        | 2.91           |
+| Target Station      | CHI00367   | 41.8882 | -87.6364 | 57        | 10501        | 18        | 29160        | 2.78           |
+| Target Station      | CHI00517   | 41.8887 | -87.6444 | 46        | 11431        | 16        | 30549        | 2.67           |
+| Target Station      | CHI00496   | 41.9491 | -87.6486 | 53        | 10742        | 27        | 27355        | 2.55           |
+| Target Station      | CHI00294   | 41.8948 | -87.6344 | 29        | 14094        | 10        | 35515        | 2.52           |
+| Target Station      | CHI01161   | 41.9097 | -87.6481 | 59        | 10211        | 37        | 24881        | 2.44           |
+| Target Station      | CHI00540   | 41.9032 | -87.6343 | 25        | 15786        | 7         | 38054        | 2.41           |
+| Target Station      | CHI00281   | 41.903  | -87.6313 | 21        | 16387        | 6         | 38133        | 2.33           |
+| Target Station      | CHI00332   | 41.8899 | -87.6343 | 34        | 13554        | 11        | 31332        | 2.31           |
+| Target Station      | CHI00430   | 41.9455 | -87.6464 | 44        | 11627        | 30        | 26881        | 2.31           |
+| Target Station      | CHI00287   | 41.9295 | -87.6431 | 58        | 10333        | 48        | 23206        | 2.25           |
+| Target Station      | CHI00336   | 41.9482 | -87.6641 | 56        | 10556        | 43        | 23542        | 2.23           |
+| Target Station      | CHI00225   | 41.9256 | -87.6537 | 62        | 10078        | 55        | 22324        | 2.22           |
+| Target Station      | CHI00354   | 41.9495 | -87.6465 | 54        | 10633        | 49        | 23179        | 2.18           |
+| Target Station      | CHI00306   | 41.899  | -87.6299 | 33        | 13616        | 19        | 28881        | 2.12           |
+| Target Station      | CHI00524   | 41.8672 | -87.626  | 43        | 11646        | 39        | 24469        | 2.1            |
+| Target Station      | CHI00396   | 41.9121 | -87.6347 | 16        | 18205        | 8         | 37956        | 2.08           |
+| Target Station      | CHI00390   | 41.9376 | -87.6441 | 45        | 11525        | 42        | 23903        | 2.07           |
+| Target Station      | CHI00353   | 41.9402 | -87.6529 | 35        | 13539        | 25        | 27694        | 2.05           |
+| Target Station      | CHI01880   | 41.8869 | -87.6481 | 61        | 10091        | 60        | 20497        | 2.03           |
+| Target Station      | CHI00345   | 41.8847 | -87.6195 | 31        | 13969        | 29        | 26973        | 1.93           |
+| Target Station      | CHI00330   | 41.8926 | -87.6173 | 24        | 15825        | 22        | 28450        | 1.8            |
+| Target Station      | CHI00454   | 41.9218 | -87.6441 | 49        | 11012        | 69        | 19635        | 1.78           |
+| Target Station      | CHI00295   | 41.8939 | -87.6299 | 36        | 13498        | 41        | 23917        | 1.77           |
+| Target Station      | CHI01744   | 41.8944 | -87.6228 | 48        | 11244        | 68        | 19697        | 1.75           |
+| Target Station      | CHI00469   | 41.9259 | -87.639  | 52        | 10761        | 78        | 18746        | 1.74           |
+| Target Station      | CHI00393   | 41.9067 | -87.6348 | 51        | 10869        | 77        | 18803        | 1.73           |
+| Target Station      | CHI00418   | 41.8986 | -87.6219 | 50        | 10881        | 89        | 18111        | 1.66           |
+| Target Station      | CHI00474   | 41.9183 | -87.6363 | 13        | 18799        | 17        | 30409        | 1.62           |
+| Target Station      | CHI00358   | 41.8908 | -87.6317 | 26        | 15559        | 38        | 24542        | 1.58           |
+| Target Station      | CHI00383   | 41.8863 | -87.6175 | 60        | 10182        | 116       | 15955        | 1.57           |
+| Target Station      | CHI00279   | 41.8908 | -87.6186 | 20        | 16791        | 35        | 25296        | 1.51           |
+| Target Station      | CHI00605   | 41.8918 | -87.6206 | 41        | 12350        | 82        | 18536        | 1.5            |
+| Target Station      | CHI00413   | 41.9157 | -87.6346 | 11        | 19405        | 20        | 28821        | 1.49           |
+| Target Station      | CHI00674   | 41.9445 | -87.6547 | 42        | 12127        | 90        | 18023        | 1.49           |
+| Target Station      | CHI00255   | 41.9367 | -87.6368 | 39        | 12585        | 91        | 18005        | 1.43           |
+| Target Station      | CHI00313   | 41.8915 | -87.6268 | 15        | 18575        | 34        | 25669        | 1.38           |
+| Target Station      | CHI00493   | 41.9326 | -87.6364 | 22        | 16385        | 57        | 22072        | 1.35           |
+| Target Station      | CHI00553   | 41.886  | -87.6244 | 19        | 16854        | 53        | 22454        | 1.33           |
+| Target Station      | CHI00310   | 41.9494 | -87.6545 | 50        | 10881        | 142       | 14235        | 1.31           |
+| Target Station      | CHI00450   | 41.8679 | -87.623  | 17        | 17504        | 52        | 22740        | 1.3            |
+| Target Station      | CHI01677   | 41.884  | -87.6247 | 14        | 18674        | 44        | 23435        | 1.25           |
+| Target Station      | CHI00480   | 41.9408 | -87.6392 | 27        | 14893        | 79        | 18589        | 1.25           |
+| Anti-Target Station | CHI00531   | 41.887  | -87.6128 | 8         | 28182        | 167       | 12555        | 0.45           |
+| Anti-Target Station | CHI01742   | 41.881  | -87.6241 | 5         | 37873        | 112       | 16196        | 0.43           |
+| Anti-Target Station | CHI00360   | 41.8661 | -87.6073 | 12        | 19209        | 277       | 7623         | 0.4            |
+| Anti-Target Station | CHI00607   | 41.8514 | -87.6188 | 78        | 9145         | 414       | 3571         | 0.39           |
+| Anti-Target Station | CHI00588   | 41.8924 | -87.6124 | 303       | 3082         | 596       | 1083         | 0.35           |
+| Anti-Target Station | CHI00374   | 41.881  | -87.6167 | 2         | 61199        | 94        | 17726        | 0.29           |
+| Anti-Target Station | CHI01749   | 41.8653 | -87.6179 | 18        | 17197        | 369       | 4840         | 0.28           |
+| Anti-Target Station | CHI01747   | 41.8923 | -87.612  | 1         | 106625       | 24        | 28160        | 0.26           |
+| Anti-Target Station | CHI00533   | 41.8672 | -87.6154 | 7         | 31237        | 259       | 8258         | 0.26           |
+
+47 target stations and 9 anti-target stations were identified by this query. This table was downloaded as a 
+csv and I plan to create a map that shows where marketing budget should be concentrated and highlights 
+which stations members versus casuals frequent.
 
 ### 4.7 Potential New Station Analysis
 
@@ -1773,7 +1895,7 @@ Tableau Desktop and still allowed space for the story notes.
   <em>Figure 6: Interactive Heatmap of Member Times. Click the preview image to open the live view on Tableau Public.</em>
 </p>
 
-### Casual Geo Heatmap
+### Casual Geographic Heatmap
 
 <p align="center">
   <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/CasualGeoHeatmap?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
@@ -1783,7 +1905,7 @@ Tableau Desktop and still allowed space for the story notes.
   <em>Figure 7: Interactive Heatmap of Casual Rides. Click the preview image to open the live view on Tableau Public.</em>
 </p>
 
-### Member Geo Heatmap
+### Member Geographic Heatmap
 
 <p align="center">
   <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/MemberGeoHeatmap?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
