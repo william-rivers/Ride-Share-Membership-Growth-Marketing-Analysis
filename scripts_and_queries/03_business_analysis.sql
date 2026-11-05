@@ -365,9 +365,11 @@ ORDER BY
 
 
 
---Identify any stations that fall into both group's top 50 and are member dominated
+--Identify high and low ROI stations
 --This table will be saved and used to generate a map of these stations' locations 
 WITH src AS (
+  SELECT *
+  FROM (
   SELECT member_casual, start_station_id AS station_id, start_lat AS lat, start_lng AS lng
   FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
   WHERE start_station_id IS NOT NULL
@@ -375,7 +377,8 @@ WITH src AS (
   SELECT member_casual, end_station_id AS station_id, end_lat AS lat, end_lng AS lng
   FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
   WHERE end_station_id IS NOT NULL
-), --Combine start and end station data together
+  )
+), --Data source for other CTEs
 
 all_rk AS (
   SELECT
@@ -409,6 +412,7 @@ geo AS (
 ) --Find the average coordinate for each station
 
 SELECT --Build list of high ROI stations
+  'Target Station' AS station_type,
   s.station_id,
   g.lat,
   g.lng,
@@ -416,13 +420,30 @@ SELECT --Build list of high ROI stations
   s.casual_rides,
   s.member_rk,
   s.member_rides,
-  ROUND(s.member_rides/s.casual_rides, 2) AS mem_cas_ratio
+  ROUND(SAFE_DIVIDE(s.member_rides, s.casual_rides), 2) AS mem_cas_ratio
 FROM split_rk s
 LEFT JOIN geo g
   ON s.station_id = g.station_id
-WHERE s.casual_rk <= 50
-  AND s.member_rk <= 50
-  AND s.member_rides > s.casual_rides --Member dominated
+WHERE SAFE_DIVIDE(s.member_rides, s.casual_rides) > 1.2
+  AND s.casual_rides > 10000
+
+UNION ALL
+
+SELECT --Build list of low ROI stations
+  'Anti-Target Station' AS station_type,
+  s.station_id,
+  g.lat,
+  g.lng,
+  s.casual_rk,
+  s.casual_rides,
+  s.member_rk,
+  s.member_rides,
+  ROUND(SAFE_DIVIDE(s.member_rides, s.casual_rides), 2) AS mem_cas_ratio
+FROM split_rk s
+LEFT JOIN geo g
+  ON s.station_id = g.station_id
+WHERE SAFE_DIVIDE(s.casual_rides, s.member_rides) > 2 
+  AND (s.member_rides + s.casual_rides) > 3000
 ORDER BY mem_cas_ratio DESC --Highest difference first;
 
 
