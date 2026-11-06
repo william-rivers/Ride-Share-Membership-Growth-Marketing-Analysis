@@ -158,16 +158,17 @@ Establish a system to identify casual users most likely to convert and lower the
 
 Example Algorithm: Points earned per ride and aggregated over the month 
 - Ride Duration
-   - Duration > 45 minutes: -1 pt
-   - 15 < duration <= 45 minutes: 0 pt
-   - 10 < duration <= 15 minutes: 1 pt
+   - Duration > 45 minutes: -2 pt
+   - 25 minutes < duration <= 45 minutes: -1 pt
+   - 15 minutes < duration <= 25 minutes: 0 pt
+   - 10 minutes < duration <= 15 minutes: 1 pt
    - Duration <= 10 minutes: 1.5 pt
 - Season
-   - November, March, or April: 0.5 pt
-   - December, January, or February: 1 pt
-   - May-September and duration < 15 minutes: 0.5 pt
+   - November, March, or April: 1 pt
+   - December, January, or February: 2 pt
+   - May-September and duration < 10 minutes: 0.5 pt
 - Day Type
-   - Weekday and 6-10 a.m. start: 1.5 pt
+   - Weekday and 6-10 a.m. start: 2 pt
    - Weekday and 3-7 p.m. start: 1 pt
    - Weekday and other time: 0.5 pt
    - Weekend: 0 pt
@@ -201,6 +202,8 @@ Additional analysis is needed to identify whether this promotion should be limit
 2) A/B Testing: Launch a small-scale pilot of the in-app loss aversion triggers to test conversion lift before global deployment.
 3) First-Party Surveys: Deploy brief, incentivized in-app surveys to better understand blocks preventing membership acquisition.
    - Example Incentive: One ride at membership pricing
+4) Use k-means clustering, random forest, or related machine learning concepts to optimize the algorithm for identifying likely converts
+   - Planned future data science addendum
 
   
 *This project dataset was suggested by the Google Data Analytics Certificate as part of the capstone project.
