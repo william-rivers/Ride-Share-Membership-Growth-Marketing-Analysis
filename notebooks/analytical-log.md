@@ -1695,6 +1695,188 @@ ORDER BY mem_cas_ratio DESC --Highest difference first;
 csv and I plan to create a map that shows where marketing budget should be concentrated and highlights 
 which stations members versus casuals frequent.
 
+```sql
+--Check target stations for differences between member and casual duration
+WITH station_data AS (
+  SELECT
+    station_id,
+    member_casual,
+    ROUND(AVG(ride_duration_minutes), 2) AS avg_duration, --For comparison against the median
+    APPROX_QUANTILES(ride_duration_minutes, 2)[OFFSET(1)] AS q2_duration --Unrounded so rounding does not affect the average median
+  FROM (
+    SELECT start_station_id AS station_id, member_casual, ride_duration_minutes
+    FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
+    WHERE start_station_id IN ('CHI01091', 'CHI00299', 'CHI00233', 'CHI00498', 'CHI01772', 'CHI00367', 'CHI00517', 'CHI00496', 'CHI00294', 'CHI01161', 'CHI00540', 'CHI00281', 'CHI00332', 'CHI00430', 'CHI00287', 'CHI00336', 'CHI00225', 'CHI00354', 'CHI00306', 'CHI00524', 'CHI00396', 'CHI00390', 'CHI00353', 'CHI01880', 'CHI00345', 'CHI00330', 'CHI00454', 'CHI00295', 'CHI01744', 'CHI00469', 'CHI00393', 'CHI00418', 'CHI00474', 'CHI00358', 'CHI00383', 'CHI00279', 'CHI00605', 'CHI00413', 'CHI00674', 'CHI00255', 'CHI00313', 'CHI00493', 'CHI00553', 'CHI00310', 'CHI00450', 'CHI01677', 'CHI00480') --Copied and pasted from previous query
+    UNION ALL
+    SELECT end_station_id AS station_id, member_casual, ride_duration_minutes
+    FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
+    WHERE end_station_id IN ('CHI01091', 'CHI00299', 'CHI00233', 'CHI00498', 'CHI01772', 'CHI00367', 'CHI00517', 'CHI00496', 'CHI00294', 'CHI01161', 'CHI00540', 'CHI00281', 'CHI00332', 'CHI00430', 'CHI00287', 'CHI00336', 'CHI00225', 'CHI00354', 'CHI00306', 'CHI00524', 'CHI00396', 'CHI00390', 'CHI00353', 'CHI01880', 'CHI00345', 'CHI00330', 'CHI00454', 'CHI00295', 'CHI01744', 'CHI00469', 'CHI00393', 'CHI00418', 'CHI00474', 'CHI00358', 'CHI00383', 'CHI00279', 'CHI00605', 'CHI00413', 'CHI00674', 'CHI00255', 'CHI00313', 'CHI00493', 'CHI00553', 'CHI00310', 'CHI00450', 'CHI01677', 'CHI00480') --Copied and pasted from previous query
+      AND end_station_id != start_station_id --Avoid double counting roundtrips at target stations
+  ) --Includes rides that start at one target station and end at another under both station ids
+  GROUP BY station_id, member_casual
+)
+
+SELECT
+  * EXCEPT(q2_duration),
+  ROUND(q2_duration, 2) AS q2_duration,
+  ROUND(AVG(q2_duration) OVER(PARTITION BY member_casual), 2) AS avg_q2_by_user_type
+  --Finds the average median for members and casuals
+FROM station_data
+ORDER BY station_id, member_casual;
+```
+
+| station_id | member_casual | avg_duration | q2_duration | avg_q2_by_user_type  |
+|------------|---------------|--------------|-------------|----------------------|
+| CHI00225   | casual        | 13.86        | 8.52        | 12.6                 |
+| CHI00225   | member        | 8.88         | 5.97        | 8.97                 |
+| CHI00233   | casual        | 15.57        | 9.32        | 12.6                 |
+| CHI00233   | member        | 10.61        | 7.72        | 8.97                 |
+| CHI00255   | casual        | 25.38        | 17.52       | 12.6                 |
+| CHI00255   | member        | 17.44        | 14.65       | 8.97                 |
+| CHI00279   | casual        | 28.89        | 17.5        | 12.6                 |
+| CHI00279   | member        | 13.85        | 9.77        | 8.97                 |
+| CHI00281   | casual        | 17.84        | 10.95       | 12.6                 |
+| CHI00281   | member        | 11.84        | 8.5         | 8.97                 |
+| CHI00287   | casual        | 17.23        | 11.2        | 12.6                 |
+| CHI00287   | member        | 12.42        | 9.15        | 8.97                 |
+| CHI00294   | casual        | 14.96        | 8.98        | 12.6                 |
+| CHI00294   | member        | 9.49         | 7.03        | 8.97                 |
+| CHI00295   | casual        | 20.03        | 11.95       | 12.6                 |
+| CHI00295   | member        | 11.91        | 8.12        | 8.97                 |
+| CHI00299   | casual        | 12.59        | 8.22        | 12.6                 |
+| CHI00299   | member        | 9.26         | 6.62        | 8.97                 |
+| CHI00306   | casual        | 17.63        | 10.88       | 12.6                 |
+| CHI00306   | member        | 11.67        | 9.13        | 8.97                 |
+| CHI00310   | casual        | 18.16        | 10.77       | 12.6                 |
+| CHI00310   | member        | 12.58        | 8.13        | 8.97                 |
+| CHI00313   | casual        | 26.31        | 14.72       | 12.6                 |
+| CHI00313   | member        | 12.13        | 7.87        | 8.97                 |
+| CHI00330   | casual        | 29.99        | 18.15       | 12.6                 |
+| CHI00330   | member        | 14.18        | 10.72       | 8.97                 |
+| CHI00332   | casual        | 15.26        | 9.32        | 12.6                 |
+| CHI00332   | member        | 10.83        | 7.58        | 8.97                 |
+| CHI00336   | casual        | 16.34        | 10.77       | 12.6                 |
+| CHI00336   | member        | 11.64        | 8.18        | 8.97                 |
+| CHI00345   | casual        | 29.05        | 17.85       | 12.6                 |
+| CHI00345   | member        | 12.55        | 8.55        | 8.97                 |
+| CHI00353   | casual        | 16.12        | 9.62        | 12.6                 |
+| CHI00353   | member        | 11.7         | 7.15        | 8.97                 |
+| CHI00354   | casual        | 22.91        | 14.05       | 12.6                 |
+| CHI00354   | member        | 13.36        | 8.85        | 8.97                 |
+| CHI00358   | casual        | 21.08        | 11.9        | 12.6                 |
+| CHI00358   | member        | 11.76        | 7.9         | 8.97                 |
+| CHI00367   | casual        | 14.71        | 8.65        | 12.6                 |
+| CHI00367   | member        | 10.19        | 7.65        | 8.97                 |
+| CHI00383   | casual        | 25.36        | 16.5        | 12.6                 |
+| CHI00383   | member        | 15.04        | 11.33       | 8.97                 |
+| CHI00390   | casual        | 19.12        | 11.82       | 12.6                 |
+| CHI00390   | member        | 13.23        | 9.1         | 8.97                 |
+| CHI00393   | casual        | 14.93        | 10.1        | 12.6                 |
+| CHI00393   | member        | 10.8         | 8.68        | 8.97                 |
+| CHI00396   | casual        | 16.16        | 10.65       | 12.6                 |
+| CHI00396   | member        | 11.19        | 9.03        | 8.97                 |
+| CHI00413   | casual        | 22.52        | 13.83       | 12.6                 |
+| CHI00413   | member        | 12.22        | 9.98        | 8.97                 |
+| CHI00418   | casual        | 27.11        | 16.55       | 12.6                 |
+| CHI00418   | member        | 12.89        | 9.05        | 8.97                 |
+| CHI00430   | casual        | 18.56        | 11.53       | 12.6                 |
+| CHI00430   | member        | 12.71        | 8.93        | 8.97                 |
+| CHI00450   | casual        | 27.72        | 17.17       | 12.6                 |
+| CHI00450   | member        | 14.26        | 10.1        | 8.97                 |
+| CHI00454   | casual        | 18.52        | 11.02       | 12.6                 |
+| CHI00454   | member        | 11.54        | 8.92        | 8.97                 |
+| CHI00469   | casual        | 21.68        | 14.05       | 12.6                 |
+| CHI00469   | member        | 13.63        | 10.88       | 8.97                 |
+| CHI00474   | casual        | 22.83        | 14.67       | 12.6                 |
+| CHI00474   | member        | 12.55        | 9.85        | 8.97                 |
+| CHI00480   | casual        | 25.99        | 18.25       | 12.6                 |
+| CHI00480   | member        | 18.11        | 14.85       | 8.97                 |
+| CHI00493   | casual        | 24.96        | 17.23       | 12.6                 |
+| CHI00493   | member        | 16.26        | 13.3        | 8.97                 |
+| CHI00496   | casual        | 16.12        | 9.8         | 12.6                 |
+| CHI00496   | member        | 10.97        | 7.4         | 8.97                 |
+| CHI00498   | casual        | 15.57        | 8.88        | 12.6                 |
+| CHI00498   | member        | 10.51        | 7.38        | 8.97                 |
+| CHI00517   | casual        | 12.95        | 8.53        | 12.6                 |
+| CHI00517   | member        | 9.49         | 6.82        | 8.97                 |
+| CHI00524   | casual        | 23.2         | 11.78       | 12.6                 |
+| CHI00524   | member        | 11.24        | 8.07        | 8.97                 |
+| CHI00540   | casual        | 14.02        | 9.35        | 12.6                 |
+| CHI00540   | member        | 10.4         | 7.97        | 8.97                 |
+| CHI00553   | casual        | 28.17        | 16.42       | 12.6                 |
+| CHI00553   | member        | 13.08        | 8.93        | 8.97                 |
+| CHI00605   | casual        | 28.11        | 16.2        | 12.6                 |
+| CHI00605   | member        | 13.93        | 9.5         | 8.97                 |
+| CHI00674   | casual        | 16.92        | 10.6        | 12.6                 |
+| CHI00674   | member        | 12.85        | 8.82        | 8.97                 |
+| CHI01091   | casual        | 16.62        | 9.92        | 12.6                 |
+| CHI01091   | member        | 10.62        | 8.37        | 8.97                 |
+| CHI01161   | casual        | 14.39        | 10.52       | 12.6                 |
+| CHI01161   | member        | 11.71        | 9.67        | 8.97                 |
+| CHI01677   | casual        | 28.75        | 17.83       | 12.6                 |
+| CHI01677   | member        | 12.47        | 8.43        | 8.97                 |
+| CHI01744   | casual        | 27.83        | 16.73       | 12.6                 |
+| CHI01744   | member        | 12.97        | 10.52       | 8.97                 |
+| CHI01772   | casual        | 17.88        | 10.33       | 12.6                 |
+| CHI01772   | member        | 10.94        | 7.7         | 8.97                 |
+| CHI01880   | casual        | 15.39        | 11.22       | 12.6                 |
+| CHI01880   | member        | 11.13        | 8.57        | 8.97                 |
+
+ANALYZE RESULTS HERE
+
+```sql
+--Check anti-target stations for differences between member and casual duration
+WITH station_data AS (
+  SELECT
+    station_id,
+    member_casual,
+    ROUND(AVG(ride_duration_minutes), 2) AS avg_duration, --For comparison against the median
+    APPROX_QUANTILES(ride_duration_minutes, 2)[OFFSET(1)] AS q2_duration --Unrounded so rounding does not affect the average median
+  FROM (
+    SELECT start_station_id AS station_id, member_casual, ride_duration_minutes
+    FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
+    WHERE start_station_id IN ('CHI00531', 'CHI01742', 'CHI00360', 'CHI00607', 'CHI00588', 'CHI00374', 'CHI01749', 'CHI01747', 'CHI00533')
+    UNION ALL
+    SELECT end_station_id AS station_id, member_casual, ride_duration_minutes
+    FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
+    WHERE end_station_id IN ('CHI00531', 'CHI01742', 'CHI00360', 'CHI00607', 'CHI00588', 'CHI00374', 'CHI01749', 'CHI01747', 'CHI00533')
+      AND end_station_id != start_station_id --Avoid double counting roundtrips at anti-target stations
+  ) --Includes rides that start at one anti-target station and end at another under both station ids
+  GROUP BY station_id, member_casual
+)
+
+SELECT
+  * EXCEPT(q2_duration),
+  ROUND(q2_duration, 2) AS q2_duration,
+  ROUND(AVG(q2_duration) OVER(PARTITION BY member_casual), 2) AS avg_q2_by_user_type
+  --Finds the average median for members and casuals
+FROM station_data
+ORDER BY station_id, member_casual;
+```
+
+| station_id | member_casual | avg_duration | q2_duration | avg_q2_by_user_type  |
+|------------|---------------|--------------|-------------|----------------------|
+| CHI00360   | casual        | 30.74        | 22.4        | 22.12                |
+| CHI00360   | member        | 20.46        | 16.48       | 15.04                |
+| CHI00374   | casual        | 32.98        | 23.45       | 22.12                |
+| CHI00374   | member        | 23.12        | 18.98       | 15.04                |
+| CHI00531   | casual        | 32.21        | 21.6        | 22.12                |
+| CHI00531   | member        | 19.74        | 14.57       | 15.04                |
+| CHI00533   | casual        | 27.27        | 20.77       | 22.12                |
+| CHI00533   | member        | 19.64        | 15.4        | 15.04                |
+| CHI00588   | casual        | 33.09        | 23.97       | 22.12                |
+| CHI00588   | member        | 19.5         | 16.18       | 15.04                |
+| CHI00607   | casual        | 28.2         | 20.2        | 22.12                |
+| CHI00607   | member        | 16.66        | 11.82       | 15.04                |
+| CHI01742   | casual        | 33.19        | 21.93       | 22.12                |
+| CHI01742   | member        | 17.58        | 11.62       | 15.04                |
+| CHI01747   | casual        | 32.6         | 23.73       | 22.12                |
+| CHI01747   | member        | 20.28        | 16.48       | 15.04                |
+| CHI01749   | casual        | 27.65        | 21.07       | 22.12                |
+| CHI01749   | member        | 17.7         | 13.8        | 15.04                |
+
+ANALYZE RESULTS HERE
+
 ### 4.7 Potential New Station Analysis
 
 In order to group the locations of abandoned bikes and identify strong areas for expansion that could be used 
