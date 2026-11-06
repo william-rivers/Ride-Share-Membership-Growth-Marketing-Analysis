@@ -110,6 +110,7 @@ SELECT
   ROUND(AVG(
     CASE WHEN ride_duration_minutes <= 1440 THEN ride_duration_minutes END
     ), 2) AS avg_duration,
+  ROUND(APPROX_QUANTILES(ride_duration_minutes, 2)[OFFSET(1)], 2) AS q2_duration,
   ROUND(AVG(distance_meters), 2) AS avg_distance
 FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
 WHERE member_casual = 'casual'
@@ -125,11 +126,15 @@ SELECT
   avg_duration,
   ROUND(
     (avg_duration - LAG(avg_duration) OVER(ORDER BY month)) / LAG(avg_duration) OVER(ORDER BY month) * 100, 2
-  ) AS pct_change_dur, --percent change in ride duration from previous month
+  ) AS pct_change_avg_dur, --percent change in average duration from previous month
+  q2_duration,
+  ROUND(
+    (q2_duration - LAG(q2_duration) OVER(ORDER BY month)) / LAG(q2_duration) OVER(ORDER BY month) * 100, 2
+  ) AS pct_change_q2_dur, --percent change in median distance from previous month
   avg_distance,
   ROUND(
     (avg_distance - LAG(avg_distance) OVER(ORDER BY month)) / LAG(avg_distance) OVER(ORDER BY month) * 100, 2
-  ) AS pct_change_dist --percent change in ride distance from previous month
+  ) AS pct_change_dist --percent change in average distance from previous month
 FROM avgs
 ORDER BY month;
 
@@ -143,6 +148,7 @@ SELECT
   ROUND(AVG(
     CASE WHEN ride_duration_minutes <= 1440 THEN ride_duration_minutes END
     ), 2) AS avg_duration,
+  ROUND(APPROX_QUANTILES(ride_duration_minutes, 2)[OFFSET(1)], 2) AS q2_duration,
   ROUND(AVG(distance_meters), 2) AS avg_distance
 FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
 WHERE member_casual = 'member'
@@ -158,20 +164,23 @@ SELECT
   avg_duration,
   ROUND(
     (avg_duration - LAG(avg_duration) OVER(ORDER BY month)) / LAG(avg_duration) OVER(ORDER BY month) * 100, 2
-  ) AS pct_change_dur, --percent change in ride duration from previous month
+  ) AS pct_change_avg_dur, --percent change in average duration from previous month
+  q2_duration,
+  ROUND(
+    (q2_duration - LAG(q2_duration) OVER(ORDER BY month)) / LAG(q2_duration) OVER(ORDER BY month) * 100, 2
+  ) AS pct_change_q2_dur, --percent change in median distance from previous month
   avg_distance,
   ROUND(
     (avg_distance - LAG(avg_distance) OVER(ORDER BY month)) / LAG(avg_distance) OVER(ORDER BY month) * 100, 2
-  ) AS pct_change_dist --percent change in ride distance from previous month
+  ) AS pct_change_dist --percent change in average distance from previous month
 FROM avgs
 ORDER BY month;
-
 
 
 --Step 3: Day of Week Analysis
 
 --Determine the most popular days for members and casuals
---Identify any duration, distance, or velocity differences between them
+--Identify any duration, distance, or velocity trends
 SELECT
   member_casual,
   day_of_week,
@@ -179,10 +188,10 @@ SELECT
   ROUND(AVG(
     CASE WHEN ride_duration_minutes <= 1440 THEN ride_duration_minutes END
   ), 2) AS avg_duration, --Exclude durations > 24 hours
-  ROUND(AVG(distance_meters), 2) AS avg_distance,
-  ROUND(AVG(
-    CASE WHEN ride_duration_minutes <= 1440 THEN avg_velocity_m_per_s END
-  ), 2) AS avg_velocity --Exclude durations > 24 hours
+  ROUND(
+    APPROX_QUANTILES(CASE WHEN ride_duration_minutes <= 1440 THEN ride_duration_minutes END, 2)[OFFSET(1)]
+  , 2) AS q2_duration, --Exclude durations > 24 hours
+  ROUND(AVG(distance_meters), 2) AS avg_distance
 FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
 GROUP BY member_casual, day_of_week
 ORDER BY member_casual, day_of_week;
@@ -191,35 +200,7 @@ ORDER BY member_casual, day_of_week;
 
 --Step 4: Time of Day Analysis
 
---Identify the most popular weekday time buckets and ride characteristics for each group
-SELECT
-  member_casual,
-  CASE
-    WHEN EXTRACT(HOUR FROM started_at) BETWEEN 6 AND 8 THEN '1) Morning Rush'
-    WHEN EXTRACT(HOUR FROM started_at) BETWEEN 9 AND 10 THEN '2) Mid-Morning'
-    WHEN EXTRACT(HOUR FROM started_at) BETWEEN 11 AND 12 THEN '3) Lunch Rush'
-    WHEN EXTRACT(HOUR FROM started_at) BETWEEN 13 AND 15 THEN '4) Mid-Afternoon'
-    WHEN EXTRACT(HOUR FROM started_at) BETWEEN 16 AND 17 THEN '5) Evening Rush'
-    WHEN EXTRACT(HOUR FROM started_at) BETWEEN 18 AND 21 THEN '6) Late Evening'
-    ELSE '7) Night'
-  END AS time_of_day,
-  COUNT(ride_id) AS ct,
-  ROUND(COUNT(*) / SUM(COUNT(*)) OVER(PARTITION BY member_casual) * 100, 2) AS pct_of_group_ct, --percent of casuals or members
-  ROUND(AVG(
-    CASE WHEN ride_duration_minutes <= 1440 THEN ride_duration_minutes END
-  ), 2) AS avg_duration, --Exclude durations > 24 hours
-  ROUND(AVG(distance_meters), 2) AS avg_distance,
-  ROUND(AVG(
-    CASE WHEN ride_duration_minutes <= 1440 THEN avg_velocity_m_per_s END
-  ), 2) AS avg_velocity --Exclude durations > 24 hours
-FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
-WHERE day_of_week BETWEEN 2 AND 6 --Weekdays only
-GROUP BY member_casual, time_of_day
-ORDER BY member_casual, time_of_day;
-
-
-
---Identify most popular weekend time buckets and ride characteristics for each group
+--Identify most popular weekday time buckets and ride characteristics for each group
 SELECT
   member_casual,
   CASE
@@ -236,12 +217,46 @@ SELECT
   ROUND(AVG(
     CASE WHEN ride_duration_minutes <= 1440 THEN ride_duration_minutes END
   ), 2) AS avg_duration,
+  ROUND(
+    APPROX_QUANTILES(CASE WHEN ride_duration_minutes <= 1440 THEN ride_duration_minutes END, 2)[OFFSET(1)]
+  , 2) AS q2_duration, --Exclude durations > 24 hours
   ROUND(AVG(distance_meters), 2) AS avg_distance,
   ROUND(AVG(
     CASE WHEN ride_duration_minutes <= 1440 THEN avg_velocity_m_per_s END
   ), 2) AS avg_velocity
 FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
-WHERE day_of_week = 1 OR day_of_week = 7 --Weeknds only
+WHERE day_of_week BETWEEN 2 AND 6 --Weekdays only
+GROUP BY member_casual, time_of_day
+ORDER BY member_casual, time_of_day;
+
+
+
+--Identify most popular weekday time buckets and ride characteristics for each group
+SELECT
+  member_casual,
+  CASE
+    WHEN EXTRACT(HOUR FROM started_at) BETWEEN 6 AND 8 THEN '1) Morning Rush'
+    WHEN EXTRACT(HOUR FROM started_at) BETWEEN 9 AND 10 THEN '2) Mid-Morning'
+    WHEN EXTRACT(HOUR FROM started_at) BETWEEN 11 AND 12 THEN '3) Lunch Rush'
+    WHEN EXTRACT(HOUR FROM started_at) BETWEEN 13 AND 15 THEN '4) Mid-Afternoon'
+    WHEN EXTRACT(HOUR FROM started_at) BETWEEN 16 AND 17 THEN '5) Evening Rush'
+    WHEN EXTRACT(HOUR FROM started_at) BETWEEN 18 AND 21 THEN '6) Late Evening'
+    ELSE '7) Night'
+  END AS time_of_day,
+  COUNT(ride_id) AS ct,
+  ROUND(COUNT(*) / SUM(COUNT(*)) OVER(PARTITION BY member_casual) * 100, 2) AS pct_of_group_ct, --percent of casuals or members
+  ROUND(AVG(
+    CASE WHEN ride_duration_minutes <= 1440 THEN ride_duration_minutes END
+  ), 2) AS avg_duration,
+  ROUND(
+    APPROX_QUANTILES(CASE WHEN ride_duration_minutes <= 1440 THEN ride_duration_minutes END, 2)[OFFSET(1)]
+  , 2) AS q2_duration, --Exclude durations > 24 hours
+  ROUND(AVG(distance_meters), 2) AS avg_distance,
+  ROUND(AVG(
+    CASE WHEN ride_duration_minutes <= 1440 THEN avg_velocity_m_per_s END
+  ), 2) AS avg_velocity
+FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
+WHERE day_of_week = 1 OR day_of_week = 7 --Weekends only
 GROUP BY member_casual, time_of_day
 ORDER BY member_casual, time_of_day;
 
