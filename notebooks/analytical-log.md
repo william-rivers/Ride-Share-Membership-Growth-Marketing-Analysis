@@ -855,6 +855,8 @@ minutes and more than 75% end before 15 minutes. Member  durations also have low
 casual durations. Not only is the member standard deviation a little over half that of casuals, the 
 interquartile range (middle 50%) is about 5 minutes narrower as well.
 
+Given that the duration data is heavily skewed right, median is a better indication of the true center.
+
 ```sql
 --Summary statistics for ride velocity by user type
 SELECT
@@ -981,6 +983,7 @@ SELECT
   ROUND(AVG(
     CASE WHEN ride_duration_minutes <= 1440 THEN ride_duration_minutes END
     ), 2) AS avg_duration,
+  ROUND(APPROX_QUANTILES(ride_duration_minutes, 2)[OFFSET(1)], 2) AS q2_duration,
   ROUND(AVG(distance_meters), 2) AS avg_distance
 FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
 WHERE member_casual = 'casual'
@@ -996,11 +999,15 @@ SELECT
   avg_duration,
   ROUND(
     (avg_duration - LAG(avg_duration) OVER(ORDER BY month)) / LAG(avg_duration) OVER(ORDER BY month) * 100, 2
-  ) AS pct_change_dur, --percent change in ride duration from previous month
+  ) AS pct_change_avg_dur, --percent change in average duration from previous month
+  q2_duration,
+  ROUND(
+    (q2_duration - LAG(q2_duration) OVER(ORDER BY month)) / LAG(q2_duration) OVER(ORDER BY month) * 100, 2
+  ) AS pct_change_q2_dur, --percent change in median distance from previous month
   avg_distance,
   ROUND(
     (avg_distance - LAG(avg_distance) OVER(ORDER BY month)) / LAG(avg_distance) OVER(ORDER BY month) * 100, 2
-  ) AS pct_change_dist --percent change in ride distance from previous month
+  ) AS pct_change_dist --percent change in average distance from previous month
 FROM avgs
 ORDER BY month;
 ```
@@ -1014,6 +1021,7 @@ SELECT
   ROUND(AVG(
     CASE WHEN ride_duration_minutes <= 1440 THEN ride_duration_minutes END
     ), 2) AS avg_duration,
+  ROUND(APPROX_QUANTILES(ride_duration_minutes, 2)[OFFSET(1)], 2) AS q2_duration,
   ROUND(AVG(distance_meters), 2) AS avg_distance
 FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
 WHERE member_casual = 'member'
@@ -1029,11 +1037,15 @@ SELECT
   avg_duration,
   ROUND(
     (avg_duration - LAG(avg_duration) OVER(ORDER BY month)) / LAG(avg_duration) OVER(ORDER BY month) * 100, 2
-  ) AS pct_change_dur, --percent change in ride duration from previous month
+  ) AS pct_change_avg_dur, --percent change in average duration from previous month
+  q2_duration,
+  ROUND(
+    (q2_duration - LAG(q2_duration) OVER(ORDER BY month)) / LAG(q2_duration) OVER(ORDER BY month) * 100, 2
+  ) AS pct_change_q2_dur, --percent change in median distance from previous month
   avg_distance,
   ROUND(
     (avg_distance - LAG(avg_distance) OVER(ORDER BY month)) / LAG(avg_distance) OVER(ORDER BY month) * 100, 2
-  ) AS pct_change_dist --percent change in ride distance from previous month
+  ) AS pct_change_dist --percent change in average distance from previous month
 FROM avgs
 ORDER BY month;
 ```
@@ -1041,36 +1053,36 @@ ORDER BY month;
 NOTE: In retrospect, I should have used COALESCE(lag expression, "N/A") to fill the blank spot in January.
 
 **Casual Results**
-| month | ct     | pct_change_ct | avg_duration | pct_change_dur | avg_distance | pct_change_dist  |
-|-------|--------|---------------|--------------|----------------|--------------|------------------|
-| 1     | 24245  |               | 12.81        |                | 1615.75      |                  |
-| 2     | 40448  | 66.83         | 13.95        | 8.9            | 1819.51      | 12.61            |
-| 3     | 86024  | 112.68        | 16.63        | 19.21          | 1970.04      | 8.27             |
-| 4     | 129026 | 49.99         | 16.4         | -1.38          | 2064.06      | 4.77             |
-| 5     | 239914 | 85.94         | 19.39        | 18.23          | 2225.24      | 7.81             |
-| 6     | 285582 | 19.04         | 21.33        | 10.01          | 2277.47      | 2.35             |
-| 7     | 316138 | 10.7          | 20.9         | -2.02          | 2240.93      | -1.6             |
-| 8     | 330755 | 4.62          | 21.22        | 1.53           | 2308.71      | 3.02             |
-| 9     | 260061 | -21.37        | 19.14        | -9.8           | 2277.62      | -1.35            |
-| 10    | 219670 | -15.53        | 17.64        | -7.84          | 2125.68      | -6.67            |
-| 11    | 97106  | -55.79        | 14.7         | -16.67         | 1903.48      | -10.45           |
-| 12    | 27481  | -71.7         | 12.68        | -13.74         | 1649.16      | -13.36           |
+| month | ct     | pct_change_ct | avg_duration | pct_change_avg_dur | q2_duration | pct_change_q2_dur | avg_distance | pct_change_dist  |
+|-------|--------|---------------|--------------|--------------------|-------------|-------------------|--------------|------------------|
+| 1     | 24245  | null          | 12.81        | null               | 6.95        | null              | 1615.75      | null             |
+| 2     | 40448  | 66.83         | 13.95        | 8.9                | 8.07        | 16.12             | 1819.51      | 12.61            |
+| 3     | 86024  | 112.68        | 16.63        | 19.21              | 9.67        | 19.83             | 1970.04      | 8.27             |
+| 4     | 129026 | 49.99         | 16.4         | -1.38              | 9.8         | 1.34              | 2064.06      | 4.77             |
+| 5     | 239914 | 85.94         | 19.39        | 18.23              | 11.55       | 17.86             | 2225.24      | 7.81             |
+| 6     | 285582 | 19.04         | 21.33        | 10.01              | 13.35       | 15.58             | 2277.47      | 2.35             |
+| 7     | 316138 | 10.7          | 20.9         | -2.02              | 12.55       | -5.99             | 2240.93      | -1.6             |
+| 8     | 330755 | 4.62          | 21.22        | 1.53               | 13.12       | 4.54              | 2308.71      | 3.02             |
+| 9     | 260061 | -21.37        | 19.14        | -9.8               | 11.65       | -11.2             | 2277.62      | -1.35            |
+| 10    | 219670 | -15.53        | 17.64        | -7.84              | 10.4        | -10.73            | 2125.68      | -6.67            |
+| 11    | 97106  | -55.79        | 14.7         | -16.67             | 8.52        | -18.08            | 1903.48      | -10.45           |
+| 12    | 27481  | -71.7         | 12.68        | -13.74             | 7.45        | -12.56            | 1649.16      | -13.36           |
 
 **Member Results**
-| month | ct     | pct_change_ct | avg_duration | pct_change_dur | avg_distance | pct_change_dist  |
-|-------|--------|---------------|--------------|----------------|--------------|------------------|
-| 1     | 111342 |               | 11.42        |                | 1838.72      |                  |
-| 2     | 158345 | 42.21         | 10.67        | -6.57          | 1980.49      | 7.71             |
-| 3     | 225628 | 42.49         | 11.22        | 5.15           | 2088.18      | 5.44             |
-| 4     | 312164 | 38.35         | 11.39        | 1.52           | 2173.8       | 4.1              |
-| 5     | 402640 | 28.98         | 12.32        | 8.17           | 2299.07      | 5.76             |
-| 6     | 382627 | -4.97         | 12.73        | 3.33           | 2405.1       | 4.61             |
-| 7     | 434775 | 13.63         | 13.02        | 2.28           | 2384.64      | -0.85            |
-| 8     | 446895 | 2.79          | 12.96        | -0.46          | 2419.09      | 1.44             |
-| 9     | 444273 | -0.59         | 12.51        | -3.47          | 2386.65      | -1.34            |
-| 10    | 417535 | -6.02         | 12.01        | -4             | 2235.02      | -6.35            |
-| 11    | 254555 | -39.03        | 11.53        | -4             | 2071.07      | -7.34            |
-| 12    | 110669 | -56.52        | 11.55        | 0.17           | 1847.69      | -10.79           |
+| month | ct     | pct_change_ct | avg_duration | pct_change_avg_dur | q2_duration | pct_change_q2_dur | avg_distance | pct_change_dist  |
+|-------|--------|---------------|--------------|--------------------|-------------|-------------------|--------------|------------------|
+| 1     | 111342 | null          | 11.42        | null               | 7.03        | null              | 1838.72      | null             |
+| 2     | 158345 | 42.21         | 10.67        | -6.57              | 7.32        | 4.13              | 1980.49      | 7.71             |
+| 3     | 225628 | 42.49         | 11.22        | 5.15               | 7.72        | 5.46              | 2088.18      | 5.44             |
+| 4     | 312164 | 38.35         | 11.39        | 1.52               | 8.13        | 5.31              | 2173.8       | 4.1              |
+| 5     | 402640 | 28.98         | 12.32        | 8.17               | 8.65        | 6.4               | 2299.07      | 5.76             |
+| 6     | 382627 | -4.97         | 12.73        | 3.33               | 9.53        | 10.17             | 2405.1       | 4.61             |
+| 7     | 434775 | 13.63         | 13.02        | 2.28               | 9.52        | -0.1              | 2384.64      | -0.85            |
+| 8     | 446895 | 2.79          | 12.96        | -0.46              | 9.47        | -0.53             | 2419.09      | 1.44             |
+| 9     | 444273 | -0.59         | 12.51        | -3.47              | 9.22        | -2.64             | 2386.65      | -1.34            |
+| 10    | 417535 | -6.02         | 12.01        | -4                 | 8.27        | -10.3             | 2235.02      | -6.35            |
+| 11    | 254555 | -39.03        | 11.53        | -4                 | 7.83        | -5.32             | 2071.07      | -7.34            |
+| 12    | 110669 | -56.52        | 11.55        | 0.17               | 7.37        | -5.87             | 1847.69      | -10.79           |
 
 Both the number of member and casual rides show a distinct preference for summer months. However, the trend 
 is much stronger for casual users with the winter averages dropping to less than 1/10 of their peak summer 
@@ -1081,9 +1093,11 @@ jump in activity during July. The number of casual rides stablizes between June 
 the members, casuals also show more rapid growth and drop off on either end of their stable usage period. 
 
 Member ride duration maintained averages between 10.5 and 13.5 minutes. Casuals instead showed a very large 
-variation in averages ranging from 12.7 to 21.3 minutes. This shows that casual rides are not only more 
+variation in averages ranging from 12.7 to 21.3 minutes. Member median durations ranged from 7.0 to 9.6 minutes
+while casual median durations ranged from 6.9 to 13.4 minutes. This shows that casual rides are not only more 
 common in the summer months but are also significantly longer while the member ride durations only slightly 
-change.
+change. I still see that the average is higher than the median, indicating outliers that are pulling the average
+up.
 
 Both members and casuals show similar distance trends as well with greater distance associated with warmer 
 months. Generally, members averaged a slightly greater distance on their trips. During the winter months the 
@@ -1109,6 +1123,9 @@ SELECT
   ROUND(AVG(
     CASE WHEN ride_duration_minutes <= 1440 THEN ride_duration_minutes END
   ), 2) AS avg_duration, --Exclude durations > 24 hours
+  ROUND(
+    APPROX_QUANTILES(CASE WHEN ride_duration_minutes <= 1440 THEN ride_duration_minutes END, 2)[OFFSET(1)]
+  , 2) AS q2_duration, --Exclude durations > 24 hours
   ROUND(AVG(distance_meters), 2) AS avg_distance
 FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
 GROUP BY member_casual, day_of_week
@@ -1120,29 +1137,33 @@ from that user type. It would be much easier to identify differences in proporti
 replace or repeat the queries since I already identified the relationships and don't need to waste the data 
 processing capacity. Moving forward I will use percent of total to simplify things.
 
-| member_casual | day_of_week | ct     | avg_duration | avg_distance | avg_velocity  |
-|---------------|-------------|--------|--------------|--------------|---------------|
-| casual        | 1           | 352270 | 22.24        | 2260.24      | 2.49          |
-| casual        | 2           | 240190 | 19.33        | 2123.66      | 2.71          |
-| casual        | 3           | 230287 | 16.72        | 2107.1       | 2.93          |
-| casual        | 4           | 232008 | 15.89        | 2096.73      | 2.98          |
-| casual        | 5           | 261943 | 16.72        | 2131.32      | 2.94          |
-| casual        | 6           | 316598 | 18.7         | 2166.93      | 2.75          |
-| casual        | 7           | 423154 | 21.52        | 2297.03      | 2.52          |
-| member        | 1           | 408689 | 13.39        | 2308.89      | 3.35          |
-| member        | 2           | 520753 | 11.93        | 2211.68      | 3.47          |
-| member        | 3           | 585663 | 11.75        | 2245.73      | 3.5           |
-| member        | 4           | 587521 | 11.67        | 2247.31      | 3.51          |
-| member        | 5           | 594163 | 11.73        | 2259.37      | 3.51          |
-| member        | 6           | 541762 | 12.1         | 2211.93      | 3.45          |
-| member        | 7           | 462897 | 13.33        | 2344.73      | 3.35          |
+NOTE: I also realized that I forgot to include avg_velocity as a measure. Since the distance comparison is 
+that they are identical, the measure would just reflect the duration changes and the query does not need to 
+be repeated to check for a trend.
+
+| member_casual | day_of_week | ct     | avg_duration | q2_duration | avg_distance  |
+|---------------|-------------|--------|--------------|-------------|---------------|
+| casual        | 1           | 352270 | 22.24        | 13.6        | 2260.24       |
+| casual        | 2           | 240190 | 19.33        | 11.23       | 2123.66       |
+| casual        | 3           | 230287 | 16.72        | 10.07       | 2107.1        |
+| casual        | 4           | 232008 | 15.89        | 9.82        | 2096.73       |
+| casual        | 5           | 261943 | 16.72        | 10.13       | 2131.32       |
+| casual        | 6           | 316598 | 18.7         | 11.12       | 2166.93       |
+| casual        | 7           | 423154 | 21.52        | 13.05       | 2297.03       |
+| member        | 1           | 408689 | 13.39        | 9.52        | 2308.89       |
+| member        | 2           | 520753 | 11.93        | 8.33        | 2211.68       |
+| member        | 3           | 585663 | 11.75        | 8.62        | 2245.73       |
+| member        | 4           | 587521 | 11.67        | 8.45        | 2247.31       |
+| member        | 5           | 594163 | 11.73        | 8.47        | 2259.37       |
+| member        | 6           | 541762 | 12.1         | 8.33        | 2211.93       |
+| member        | 7           | 462897 | 13.33        | 9.27        | 2344.73       |
 
 With Sunday-Saturday as 1-7, we can see that members and casuals follow opposite patterns. Casuals favor 
 rides on the weekend with a particular focus on Saturdays. Member take more rides on weekdays with 
 Wednesdays being the peak day. In both members and casuals, the average duration and distance peak on the 
-weekend and show a mild elevation on Mondays and Fridays as compared to other weekdays. The member rides 
-show a very slight decrease in the average velocity on the weekend whereas the weekend decrease is more 
-pronounced in casual rides.
+weekend and show a mild elevation on Mondays and Fridays as compared to other weekdays. The median durations 
+for members and casuals are much more similar during the weekdays than during the weekends. The distance data 
+for both groups is approximately identical once again.
 
 ### 4.4 Time of Day Analysis
 
@@ -1167,6 +1188,9 @@ SELECT
   ROUND(AVG(
     CASE WHEN ride_duration_minutes <= 1440 THEN ride_duration_minutes END
   ), 2) AS avg_duration,
+  ROUND(
+    APPROX_QUANTILES(CASE WHEN ride_duration_minutes <= 1440 THEN ride_duration_minutes END, 2)[OFFSET(1)]
+  , 2) AS q2_duration, --Exclude durations > 24 hours
   ROUND(AVG(distance_meters), 2) AS avg_distance,
   ROUND(AVG(
     CASE WHEN ride_duration_minutes <= 1440 THEN avg_velocity_m_per_s END
@@ -1178,7 +1202,7 @@ ORDER BY member_casual, time_of_day;
 ```
 
 ```sql
---Identify most popular weekend time buckets and ride characteristics for each group
+--Identify most popular weekday time buckets and ride characteristics for each group
 SELECT
   member_casual,
   CASE
@@ -1195,12 +1219,15 @@ SELECT
   ROUND(AVG(
     CASE WHEN ride_duration_minutes <= 1440 THEN ride_duration_minutes END
   ), 2) AS avg_duration,
+  ROUND(
+    APPROX_QUANTILES(CASE WHEN ride_duration_minutes <= 1440 THEN ride_duration_minutes END, 2)[OFFSET(1)]
+  , 2) AS q2_duration, --Exclude durations > 24 hours
   ROUND(AVG(distance_meters), 2) AS avg_distance,
   ROUND(AVG(
     CASE WHEN ride_duration_minutes <= 1440 THEN avg_velocity_m_per_s END
   ), 2) AS avg_velocity
 FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
-WHERE day_of_week = 1 OR day_of_week = 7 --Weeknds only
+WHERE day_of_week = 1 OR day_of_week = 7 --Weekends only
 GROUP BY member_casual, time_of_day
 ORDER BY member_casual, time_of_day;
 ```
@@ -1219,22 +1246,22 @@ earlier notes to make sure I did it correctly.
 | Night          | 10pm-6am   |
 
 **Weekday Results**
-| member_casual | time_of_day      | ct     | pct_of_group_ct | avg_duration | avg_distance | avg_velocity  |
-|---------------|------------------|--------|-----------------|--------------|--------------|---------------|
-| casual        | 1) Morning Rush  | 118056 | 9.22            | 12           | 1916.93      | 3.45          |
-| casual        | 2) Mid-Morning   | 86224  | 6.73            | 19.98        | 2021.29      | 2.76          |
-| casual        | 3) Lunch Rush    | 125181 | 9.77            | 21.62        | 2149.37      | 2.53          |
-| casual        | 4) Mid-Afternoon | 237715 | 18.56           | 20.23        | 2169.59      | 2.6           |
-| casual        | 5) Evening Rush  | 257333 | 20.09           | 17.23        | 2273.36      | 2.85          |
-| casual        | 6) Late Evening  | 330726 | 25.82           | 16.52        | 2125.23      | 2.87          |
-| casual        | 7) Night         | 125791 | 9.82            | 15.33        | 2009.97      | 3.14          |
-| member        | 1) Morning Rush  | 526496 | 18.61           | 10.91        | 2311.59      | 3.75          |
-| member        | 2) Mid-Morning   | 220001 | 7.77            | 10.84        | 2051.3       | 3.47          |
-| member        | 3) Lunch Rush    | 236837 | 8.37            | 11.23        | 1925.65      | 3.29          |
-| member        | 4) Mid-Afternoon | 431216 | 15.24           | 11.84        | 2139.24      | 3.38          |
-| member        | 5) Evening Rush  | 618753 | 21.87           | 12.77        | 2408.86      | 3.42          |
-| member        | 6) Late Evening  | 628779 | 22.22           | 12.3         | 2233.91      | 3.4           |
-| member        | 7) Night         | 167780 | 5.93            | 11.59        | 2301.23      | 3.79          |
+| member_casual | time_of_day      | ct     | pct_of_group_ct | avg_duration | q2_duration | avg_distance | avg_velocity  |
+|---------------|------------------|--------|-----------------|--------------|-------------|--------------|---------------|
+| casual        | 1) Morning Rush  | 118056 | 9.22            | 12           | 7.5         | 1916.93      | 3.45          |
+| casual        | 2) Mid-Morning   | 86224  | 6.73            | 19.98        | 9.82        | 2021.29      | 2.76          |
+| casual        | 3) Lunch Rush    | 125181 | 9.77            | 21.62        | 11.85       | 2149.37      | 2.53          |
+| casual        | 4) Mid-Afternoon | 237715 | 18.56           | 20.23        | 11.88       | 2169.59      | 2.6           |
+| casual        | 5) Evening Rush  | 257333 | 20.09           | 17.23        | 11.15       | 2273.36      | 2.85          |
+| casual        | 6) Late Evening  | 330726 | 25.82           | 16.52        | 10.97       | 2125.23      | 2.87          |
+| casual        | 7) Night         | 125791 | 9.82            | 15.33        | 9.02        | 2009.97      | 3.14          |
+| member        | 1) Morning Rush  | 526496 | 18.61           | 10.91        | 8.05        | 2311.59      | 3.75          |
+| member        | 2) Mid-Morning   | 220001 | 7.77            | 10.84        | 7.4         | 2051.3       | 3.47          |
+| member        | 3) Lunch Rush    | 236837 | 8.37            | 11.23        | 7.32        | 1925.65      | 3.29          |
+| member        | 4) Mid-Afternoon | 431216 | 15.24           | 11.84        | 8.1         | 2139.24      | 3.38          |
+| member        | 5) Evening Rush  | 618753 | 21.87           | 12.77        | 9.35        | 2408.86      | 3.42          |
+| member        | 6) Late Evening  | 628779 | 22.22           | 12.3         | 8.92        | 2233.91      | 3.4           |
+| member        | 7) Night         | 167780 | 5.93            | 11.59        | 7.8         | 2301.23      | 3.79          |
 
 Members show a much greater preference for the Morning Rush time band than casuals. Casuals show a slightly 
 greater preference for the Late Evening and Night time frames than members. For all other time bands, the 
@@ -1244,29 +1271,33 @@ than the rest of the casual rides. This makes the casual usage during the Mornin
 to the member usage than any other time band. This indicates that there is a moderately sized group of casual 
 rides that could be recruited into being members.
 
+UPDATE ANALYSIS
+
 **Weekend Results**
-| member_casual | time_of_day      | ct     | pct_of_group_ct | avg_duration | avg_distance | avg_velocity |
-|---------------|------------------|--------|-----------------|--------------|--------------|--------------|
-| casual        | 1) Morning Rush  | 32777  | 4.23            | 21.64        | 2250.66      | 2.95         |
-| casual        | 2) Mid-Morning   | 71975  | 9.28            | 23.72        | 2380.98      | 2.58         |
-| casual        | 3) Lunch Rush    | 115867 | 14.94           | 23.99        | 2481.55      | 2.42         |
-| casual        | 4) Mid-Afternoon | 198836 | 25.64           | 23.43        | 2413.94      | 2.36         |
-| casual        | 5) Evening Rush  | 121580 | 15.68           | 22.23        | 2318.41      | 2.41         |
-| casual        | 6) Late Evening  | 134602 | 17.36           | 19.98        | 2047.25      | 2.46         |
-| casual        | 7) Night         | 99787  | 12.87           | 16.93        | 1985.5       | 2.89         |
-| member        | 1) Morning Rush  | 56166  | 6.44            | 12.31        | 2353.33      | 3.74         |
-| member        | 2) Mid-Morning   | 99147  | 11.38           | 12.6         | 2274.84      | 3.44         |
-| member        | 3) Lunch Rush    | 131479 | 15.09           | 13.49        | 2344.5       | 3.28         |
-| member        | 4) Mid-Afternoon | 204491 | 23.46           | 14.03        | 2405.34      | 3.23         |
-| member        | 5) Evening Rush  | 132382 | 15.19           | 14.18        | 2349.7       | 3.22         |
-| member        | 6) Late Evening  | 160766 | 18.45           | 13.19        | 2226.65      | 3.29         |
-| member        | 7) Night         | 87155  | 10.0            | 12.16        | 2319.03      | 3.64         |
+| member_casual | time_of_day      | ct     | pct_of_group_ct | avg_duration | q2_duration | avg_distance | avg_velocity  |
+|---------------|------------------|--------|-----------------|--------------|-------------|--------------|---------------|
+| casual        | 1) Morning Rush  | 32777  | 4.23            | 21.64        | 11.13       | 2250.66      | 2.95          |
+| casual        | 2) Mid-Morning   | 71975  | 9.28            | 23.72        | 13.03       | 2380.98      | 2.58          |
+| casual        | 3) Lunch Rush    | 115867 | 14.94           | 23.99        | 14.63       | 2481.55      | 2.42          |
+| casual        | 4) Mid-Afternoon | 198836 | 25.64           | 23.43        | 15          | 2413.94      | 2.36          |
+| casual        | 5) Evening Rush  | 121580 | 15.68           | 22.23        | 14.17       | 2318.41      | 2.41          |
+| casual        | 6) Late Evening  | 134602 | 17.36           | 19.98        | 12.5        | 2047.25      | 2.46          |
+| casual        | 7) Night         | 99787  | 12.87           | 16.93        | 9.7         | 1985.5       | 2.89          |
+| member        | 1) Morning Rush  | 56166  | 6.44            | 12.31        | 8.25        | 2353.33      | 3.74          |
+| member        | 2) Mid-Morning   | 99147  | 11.38           | 12.6         | 8.68        | 2274.84      | 3.44          |
+| member        | 3) Lunch Rush    | 131479 | 15.09           | 13.49        | 9.5         | 2344.5       | 3.28          |
+| member        | 4) Mid-Afternoon | 204491 | 23.46           | 14.03        | 10.13       | 2405.34      | 3.23          |
+| member        | 5) Evening Rush  | 132382 | 15.19           | 14.18        | 10.05       | 2349.7       | 3.22          |
+| member        | 6) Late Evening  | 160766 | 18.45           | 13.19        | 9.07        | 2226.65      | 3.29          |
+| member        | 7) Night         | 87155  | 10              | 12.16        | 8.37        | 2319.03      | 3.64          |
 
 On weekends, members and casuals take rides at similar rates throughout the day. Members show a slightly higher 
 preference for morning times and casuals show a higher preference for afternoon and night times. Interestingly, 
 the average member ride durations are only slightly higher than during the week and they maintained a similarly 
 high average velocity. This likely means that on weekends meany members are still taking rides for utilitarian 
 purposes rather than taking recreational rides.
+
+UPDATE ANALYSIS
 
 ### 4.5 Bike Type Analysis
 
@@ -1822,7 +1853,10 @@ ORDER BY station_id, member_casual;
 | CHI01880   | casual        | 15.39        | 11.22       | 12.6                 |
 | CHI01880   | member        | 11.13        | 8.57        | 8.97                 |
 
-ANALYZE RESULTS HERE
+The station average is higher than the median for every station indicating that there are high duration 
+outliers pulling up the average at each station. Casual rides are consistently longer and the median durations 
+approximately mirror the overall distribution even though the median duration at some stations are noteably 
+higher than the overall median. On average, the member median is 3.63 minutes lower than the casual median.
 
 ```sql
 --Check anti-target stations for differences between member and casual duration
@@ -1875,7 +1909,11 @@ ORDER BY station_id, member_casual;
 | CHI01749   | casual        | 27.65        | 21.07       | 22.12                |
 | CHI01749   | member        | 17.7         | 13.8        | 15.04                |
 
-ANALYZE RESULTS HERE
+Anti-target stations have significantly higher average and median durations than the target stations which 
+supports the decision to classify them as anti-targets. Again the averages are notably higher than the medians 
+indicating a small number of rides much longer than the rest. The difference between casuals and members is 
+more pronounced in these stations since with the average member median 7.08 minutes shorter than the average 
+casual median.
 
 ### 4.7 Potential New Station Analysis
 
