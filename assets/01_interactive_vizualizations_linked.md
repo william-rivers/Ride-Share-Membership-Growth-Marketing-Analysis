@@ -5,7 +5,7 @@ All visualizations are saved in the same workbook, so they can all be accessed f
 ## Dashboard
 
 <p align="center">
-  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/Dashboard1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
+  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/MembervCasual?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
     <img src="/assets/ride_share_dashboard.png" alt="Ride-Share Marketing Dashboard" width="100%">
   </a>
   <br>
