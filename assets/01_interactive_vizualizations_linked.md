@@ -63,21 +63,21 @@ All visualizations are saved in the same workbook, so they can all be accessed f
   <em>Figure 6: Interactive Heatmap of Member Times. Click the preview image to open the live view on Tableau Public.</em>
 </p>
 
-### Casual Geo Heatmap
+### Casual Geographic Heatmap
 
 <p align="center">
   <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/CasualGeoHeatmap?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
-    <img src="/assets/casual_geo_heatmap.png" alt="Ride-Share Casual Ride Heatmap" width="60%">
+    <img src="/assets/casual_geographic_heatmap.png" alt="Ride-Share Casual Ride Heatmap" width="60%">
   </a>
   <br>
   <em>Figure 7: Interactive Heatmap of Casual Rides. Click the preview image to open the live view on Tableau Public.</em>
 </p>
 
-### Member Geo Heatmap
+### Member Geographic Heatmap
 
 <p align="center">
   <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/MemberGeoHeatmap?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
-    <img src="/assets/member_geo_heatmap.png" alt="Ride-Share Member Ride Heatmap" width="60%">
+    <img src="/assets/member_geographic_heatmap.png" alt="Ride-Share Member Ride Heatmap" width="60%">
   </a>
   <br>
   <em>Figure 8: Interactive Heatmap of Member Rides. Click the preview image to open the live view on Tableau Public.</em>
@@ -87,10 +87,10 @@ All visualizations are saved in the same workbook, so they can all be accessed f
 
 <p align="center">
   <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/HighROIStations?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
-    <img src="/assets/high_roi_stations.png" alt="Ride-Share High ROI Stations Mapped" width="60%">
+    <img src="/assets/target_and_anti_target_stations.png" alt="Ride-Share Target and Anti-Target Stations Mapped" width="60%">
   </a>
   <br>
-  <em>Figure 9: Interactive Map of Stations with High ROI Potenial. Click the preview image to open the live view on Tableau Public.</em>
+  <em>Figure 9: Interactive Map of Stations with High (Target) and Low (Anti-Target) ROI Potenial. Click the preview image to open the live view on Tableau Public.</em>
 </p>
 
 ### Weekends/Weekdays
