@@ -36,7 +36,7 @@ All visualizations are saved in the same workbook, so they can all be accessed f
 
 ### Rideable Type by Season
 <p align="center">
-  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/RideableTypebySeasons?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
+  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/RideableTypebySeason?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
     <img src="/assets/rideable_type_by_season.png" alt="Ride-Share Rideable Type by Season" width="35%">
   </a>
   <br>
@@ -83,10 +83,10 @@ All visualizations are saved in the same workbook, so they can all be accessed f
   <em>Figure 8: Interactive Heatmap of Member Rides. Click the preview image to open the live view on Tableau Public.</em>
 </p>
 
-### High ROI Stations
+### Target and Anti-Target Stations
 
 <p align="center">
-  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/HighROIStations?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
+  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/TargetandAnti-TargetStations?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
     <img src="/assets/target_and_anti_target_stations.png" alt="Ride-Share Target and Anti-Target Stations Mapped" width="60%">
   </a>
   <br>
