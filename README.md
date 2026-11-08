@@ -68,6 +68,7 @@ Rather than deploying a broad marketing campaign across the entire casual footpr
 4) Geography: Rides tend to be more spread out across the full service range
    - Especially true on weekends
    - Favor inland locations more than casuals
+   - 47 target stations identified
 5) Overall: Very little variation in usage patterns
 
 **Casuals**
@@ -80,13 +81,14 @@ Rather than deploying a broad marketing campaign across the entire casual footpr
    - Classic bike usage roughly doubles on weekends
 4) Geography: Rides tend to be more concentrated in the same geographic area
    - Coastal areas in particular are highly popular
+   - 9 anti-target stations identified
 6) Overall: Large amounts of variation in usage pattern based on many factors
 
 ### Low Friction Target Segments
 
 1) **The Short-Duration Commuters:** Annual members heavily favor taking short-duration, utility-driven rides. A significant cohort of casual riders mirrors this behavior, which marks them as likely converts.
 2) **The Rush-Hour Commuters:** Temporal analysis shows that although the highest casual usage is on the weekends, a distinct segment of casual rides occur during traditional weekday rush hours (6:00 AM - 10:00 AM and 3:00 PM - 7:00 PM), matching member peak usage hours. The member-dominated morning rush identifies likely converts and the shared evening rush captures the highest traffic periods.
-3) **The Inland Corridor:** Geographic mapping isolates a divide between members and casual users: casual rides concentrate more heavily along the coast while member rides concentrate more heavily inland. Analysis identified [24 stations](./notebooks/analytical-log.md###-4.6-Popular-Station-Analysis) that are member-dominated despite high popularity with casual users.
+3) **The Inland Corridor:** Geographic mapping isolates a divide between members and casual users: casual rides concentrate more heavily along the coast while member rides concentrate more heavily inland. Analysis identified [47 stations](./notebooks/analytical-log.md###-4.6-Popular-Station-Analysis) that are member-dominated despite high popularity with casual users.
 4) **The Seasonal Pivot:** Casual riders still active during winter months (December-February) are displaying member-like behavior since casual rides dropped to 1/10th of their peak usage during the winter months while member rides only dropped to 1/4th of their peak. Additionally, while the rest of the year matches the standard member ratio of 1:2 classic-to-electric rides, winter casual usage shifts to a 1:3 ratio. This indicates a high willingness to pay a premium for speed and cold-weather convenience.
 
 ### Campaign Timing
@@ -194,14 +196,16 @@ Points earned per ride and aggregated over the month
 <6 points: No trial month offered
    - Low conversion probability
    - Tourists and low utility
+
 6-14 points: 25% discount on 1 month trial membership ($8.99 for the month)
    - Moderate conversion probability
    - Errand runners and occasional commuters
-   - Captures a high-recall segment likely to save with a membership
+   - Captures a high-volume segment likely to save with a membership
+
 15+ points: 50% discount on 1 month trial membership ($6.00 for the month)
    - High conversion probability
    - Frequent user and commuters
-   - Captures high-precision segment guaranteed to save with a membership
+   - Captures high-alignment segment in need of a membership
 
 Additional analysis is needed to identify whether this promotion should be limited to the winter phase. If the high volume of casual summer rides represents repeat customers, it could lead to a notable drop in summer revenue from casuals using the discounted trial without intending to purchase an annual membership. If the high volume is mostly from unique users, the promotion is unlikely to affect revenue severely.
 
