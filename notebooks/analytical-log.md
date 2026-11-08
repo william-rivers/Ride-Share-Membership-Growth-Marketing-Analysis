@@ -1267,11 +1267,10 @@ Members show a much greater preference for the Morning Rush time band than casua
 greater preference for the Late Evening and Night time frames than members. For all other time bands, the 
 percentage of their total rides is approximately the same between members and casuals. The casual rides in 
 the Morning Rush band have an average duration and velocity significantly lower and higher, respectively, 
-than the rest of the casual rides. This makes the casual usage during the Morning Rush band much more similar 
-to the member usage than any other time band. This indicates that there is a moderately sized group of casual 
-rides that could be recruited into being members.
-
-UPDATE ANALYSIS
+than the rest of the casual rides. The median duration even drops below that of members for the same time band
+This makes the casual usage during the Morning Rush band much more similar to the member usage than any other 
+time band. This indicates that there is a moderately sized group of casual rides that could be recruited into 
+being members.
 
 **Weekend Results**
 | member_casual | time_of_day      | ct     | pct_of_group_ct | avg_duration | q2_duration | avg_distance | avg_velocity  |
@@ -1293,11 +1292,10 @@ UPDATE ANALYSIS
 
 On weekends, members and casuals take rides at similar rates throughout the day. Members show a slightly higher 
 preference for morning times and casuals show a higher preference for afternoon and night times. Interestingly, 
-the average member ride durations are only slightly higher than during the week and they maintained a similarly 
-high average velocity. This likely means that on weekends meany members are still taking rides for utilitarian 
-purposes rather than taking recreational rides.
-
-UPDATE ANALYSIS
+the average and median member ride durations are only slightly higher than during the week and they maintained a 
+similarly high average velocity. This likely means that on weekends meany members are still taking rides for 
+utilitarian purposes rather than taking recreational rides. Casuals instead show elevation to both their average 
+and median across all time bands.
 
 ### 4.5 Bike Type Analysis
 
@@ -1369,7 +1367,9 @@ ORDER BY season, member_casual, rideable_type;
 
 Members consistently chose electric bikes about twice as often as classic bikes throughout the year. Casuals 
 had a similar ratio during the Summer and Autumn, but chose electric bikes a little less than 3 times more 
-often as classic bikes during the Winter and Spring.
+often as classic bikes during the Winter and Spring. This indicates a willingness to pay more for quicker 
+rides during cold seasons. There is opportunity to leverage the membership rate for electric bikes in this 
+segment as it represents a more than 50% reduction in price.
 
 ### 4.6 Popular Station Analysis
 
@@ -1919,8 +1919,9 @@ casual median.
 
 In order to group the locations of abandoned bikes and identify strong areas for expansion that could be used 
 to recruit more casuals, I used BigQuery's ST_CLUSTERDBSCAN function but the millions of points overwhelmed 
-the memory allotment for the task. In response, I used geohashing to pre-aggregate the points and previewed 
-the number of grids to make sure I would not repeat my previous mistake.
+the memory allotment for the task. In response, I researched available functions in GoogleSQL and used geohashing 
+to pre-aggregate the points. I also decided to preview the number of grids to make sure I would not repeat my 
+previous mistake.
 
 ```sql
 --Cluster points into geohash grids to aggregate data before using ST_CLUSTERDBSCAN
@@ -2060,7 +2061,7 @@ Tableau Desktop and still allowed space for the story notes.
 
 ### Dashboard
 <p align="center">
-  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/Dashboard1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
+  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/MembervCasual?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
     <img src="/assets/ride_share_dashboard.png" alt="Ride-Share Marketing Dashboard" width="100%">
   </a>
   <br>
@@ -2088,7 +2089,7 @@ Tableau Desktop and still allowed space for the story notes.
 
 ### Rideable Type by Season
 <p align="center">
-  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/RideableTypebySeasons?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
+  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/RideableTypebySeason?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
     <img src="/assets/rideable_type_by_season.png" alt="Ride-Share Rideable Type by Season" width="35%">
   </a>
   <br>
@@ -2119,7 +2120,7 @@ Tableau Desktop and still allowed space for the story notes.
 
 <p align="center">
   <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/CasualGeoHeatmap?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
-    <img src="/assets/casual_geo_heatmap.png" alt="Ride-Share Casual Ride Heatmap" width="60%">
+    <img src="/assets/casual_geographic_heatmap.png" alt="Ride-Share Casual Ride Heatmap" width="60%">
   </a>
   <br>
   <em>Figure 7: Interactive Heatmap of Casual Rides. Click the preview image to open the live view on Tableau Public.</em>
@@ -2129,21 +2130,28 @@ Tableau Desktop and still allowed space for the story notes.
 
 <p align="center">
   <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/MemberGeoHeatmap?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
-    <img src="/assets/member_geo_heatmap.png" alt="Ride-Share Member Ride Heatmap" width="60%">
+    <img src="/assets/member_geographic_heatmap.png" alt="Ride-Share Member Ride Heatmap" width="60%">
   </a>
   <br>
   <em>Figure 8: Interactive Heatmap of Member Rides. Click the preview image to open the live view on Tableau Public.</em>
 </p>
 
-### High ROI Stations
+### Target and Anti-Target Stations
 
 <p align="center">
-  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/HighROIStations?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
-    <img src="/assets/high_roi_stations.png" alt="Ride-Share High ROI Stations Mapped" width="60%">
+  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/TargetandAnti-TargetStations?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
+    <img src="/assets/target_and_anti_target_stations.png" alt="Ride-Share Target and Anti-Target Stations Mapped" width="60%">
   </a>
   <br>
-  <em>Figure 9: Interactive Map of Stations with High ROI Potenial. Click the preview image to open the live view on Tableau Public.</em>
+  <em>Figure 9: Interactive Map of Stations with High (Target) and Low (Anti-Target) ROI Potenial. Click the preview image to open the live view on Tableau Public.</em>
 </p>
+
+The purpose of Priority Weight is to balance ride volume with rider-type skew to guide marketing 
+focus (Targets) vs exclusion (Anti-Targets).
+
+Formula:
+- Targets: log(member_rides + casual_rides) * mem_cas_ratio
+- Anti-Targets: log(member_rides + casual_rides) * (1/mem_cas_ratio)
 
 ### Weekends/Weekdays
 
@@ -2189,3 +2197,93 @@ Tableau Desktop and still allowed space for the story notes.
 
 ### 6.2 Recommendations
 
+#### Biphasic Go-To-Market Campaign
+
+ - **Phase 1: Peak-Volume Acquisition (May-August)**
+   - **Objective:** Capture the massive summer surge of casual riders by separating high-utility riders from recreational users.
+ - **Phase 2: High-Conversion Retention (December-February)** 
+   - **Objective:** Capture the lower volume of casual users who display the strongest baseline alignment with annual member habits.
+
+**Implement In-App Loss Aversion Triggers**
+-  **General:** A membership would have saved you $X.XX on this ride
+-  **General:** This month you would have saved $X.XX with a membership
+-  **General:** Did you know the annual membership costs less than $12/month?
+-  **Shorter Classic Rides:** Membership costs less per month than four 10 minute rides/month on classic bikes
+-  **Longer Classic Rides:** Membership costs less per month than three 15 minute rides/month on classic bikes
+-  **Shorter Electric Rides:** Membership costs less per month than three 10 minute rides/month on electric bikes
+-  **Longer Electric Rides:** Membership costs less per month than two 15 minute rides/month on electric bikes
+-  **Day Passes:** Did you know the annual membership costs less than 8 Day Passes?
+-  **Classic Ride Under 45 Minutes:** This ride would be free with a membership!
+
+**Deploy Localized Out-of-Home (OOH) Station Marketing**
+
+Establish localized brand equity by deploying physical marketing (e.g. vinyl station wraps, dock signage, or digital terminal displays) at the 24 key stations identified during the analysis. 
+
+#### Offer Dynamic Membership Trial Discounts
+
+Establish a system to identify casual users most likely to convert (most utility-driving rides) and lower their barrier to conversion for the new year by offering a small discounted trial. At the beginning of the year, people chose new habits or goals often related to health and exercise. Lowering the barrier encourages people to trial a healthy mode of transportation or exercise.
+
+**Example Algorithm:**
+Points earned per ride and aggregated over the month
+
+- Ride Duration
+   - Duration > 45 minutes: -3 pt
+   - 25 minutes < duration <= 45 minutes: -1.5 pt
+   - 15 minutes < duration <= 25 minutes: 0.0 pt
+   - 10 minutes < duration <= 15 minutes: +1.0 pt
+   - Duration <= 10 minutes: +2.0 pt
+- Season
+   - November, March, or April: +1.0 pt
+   - December, January, or February: +2.0 pt
+   - May-September and duration < 10 minutes: +1.0 pt
+   - May-September and weekend: -0.5
+- Day Type
+   - Weekday and 7-9 a.m. start: +2.0 pt
+   - Weekday and (6-7 a.m. or 9-10 a.m. start): +1.5 pt
+   - Weekday and 3-7 p.m. start: +1.0 pt
+   - Weekday and other time: +0.5 pt
+   - Weekend: 0.0 pt
+- Rideable Type
+   - November-April and electric: +1.0 pt
+- Geography
+   - Starts at a target station: +1.5 pt
+   - Ends at a target station: +1.5 pt
+   - Starts at an anti-target station: -1.5 pt
+   - Ends at an anti-target station: -1.5 pt
+   - Start station = end station: -2.0 pt
+- Consistency (tracking individuals' behavior)
+   - 2-3 rides/month and avg pts >+ 3: 1.5x points
+   - 4+ rides/month and avg pts >+ 3: 2x points
+
+**Monthly Points**
+<6 points: No trial month offered
+   - Low conversion probability
+   - Tourists and low utility
+6-14 points: 25% discount on 1 month trial membership ($8.99 for the month)
+   - Moderate conversion probability
+   - Errand runners and occasional commuters
+   - Captures a high-recall segment likely to save with a membership
+15+ points: 50% discount on 1 month trial membership ($6.00 for the month)
+   - High conversion probability
+   - Frequent user and commuters
+   - Captures high-precision segment guaranteed to save with a membership
+
+Additional analysis is needed to identify whether this promotion should be limited to the winter phase. If the high volume of casual summer rides represents repeat customers, it could lead to a notable drop in summer revenue from casuals using the discounted trial without intending to purchase an annual membership. If the high volume is mostly from unique users, the promotion is unlikely to affect revenue severely.
+
+#### Limitations
+
+* No Customer IDs: The dataset lacks the unique customer IDs required to track individuals longitudinal usage.
+* No Demographic Data:  The dataset lacks the demographic profiles required to track cohorts of users.
+* Financial Redaction: The dataset lacks exact pricing tables, dynamic surge rates, and operational costs required to determine a precise Return on Investment (ROI) forecast for the campaign.
+
+#### Next Steps
+
+1) User Tracking: Identify whether high summer casual usage is driven by repeat users or unique users
+2) A/B Testing: Launch a small-scale pilot of the in-app loss aversion triggers to test conversion lift before global deployment.
+3) First-Party Surveys: Deploy brief, incentivized in-app surveys to better understand blocks preventing membership acquisition.
+   - Example Incentive: One ride at membership pricing
+4) Use k-means clustering, random forest, or related machine learning concepts to optimize the algorithm for identifying likely converts
+   - Planned future data science addendum
+
+  
+*This project dataset was suggested by the Google Data Analytics Certificate as part of the capstone project.
