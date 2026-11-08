@@ -29,7 +29,7 @@ The [raw data source](https://divvy-tripdata.s3.amazonaws.com/index.html), strip
 
 - Python: Utilized locally for raw data preprocessing (chunking for file resizing) to optimize cloud data warehouse upload efficiency.
 - Markdown: Used to document the analytical log and maintain tracking notes.
-- Google Sheets: 
+- Google Sheets: Examining distinct station id/name combinations and organizing markdown tables.
 
 ## Data Cleaning
 
@@ -111,14 +111,16 @@ The extreme drop in casual usage during the winter months identifies a lower vol
 
 ## Supporting Visualizations
 
+### Dashboard
 <p align="center">
-  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/Dashboard1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
+  <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/MembervCasual?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
     <img src="/assets/ride_share_dashboard.png" alt="Ride-Share Marketing Dashboard" width="100%">
   </a>
   <br>
   <em>Figure 1: Interactive Member Conversion Dashboard. Click the preview image to open the live view on Tableau Public.</em>
 </p>
 
+### Story
 <p align="center">
   <a href="https://public.tableau.com/views/ride_share_member_growth_marketing_analysis_resized/Story1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank">
     <img src="/assets/ride_share_story.png" alt="Ride-Share Marketing Story" width="100%">
@@ -140,7 +142,7 @@ The extreme drop in casual usage during the winter months identifies a lower vol
 
 -  **General:** A membership would have saved you $X.XX on this ride
 -  **General:** This month you would have saved $X.XX with a membership
--  **General:** Did you know the membership costs less than $12/month?
+-  **General:** Did you know the annual membership costs less than $12/month?
 -  **Shorter Classic Rides:** Membership costs less per month than four 10 minute rides/month on classic bikes
 -  **Longer Classic Rides:** Membership costs less per month than three 15 minute rides/month on classic bikes
 -  **Shorter Electric Rides:** Membership costs less per month than three 10 minute rides/month on electric bikes
@@ -154,41 +156,54 @@ Establish localized brand equity by deploying physical marketing (e.g. vinyl sta
 
 ### Offer Dynamic Membership Trial Discounts
 
-Establish a system to identify casual users most likely to convert and lower their barrier to conversion for the new year by offering a small discounted trial. At the beginning of the year, people chose new habits or goals often related to health and exercise. Lowering the barrier encourages people to trial a healthy mode of transportation or exercise.
+Establish a system to identify casual users most likely to convert (most utility-driving rides) and lower their barrier to conversion for the new year by offering a small discounted trial. At the beginning of the year, people chose new habits or goals often related to health and exercise. Lowering the barrier encourages people to trial a healthy mode of transportation or exercise.
 
-Example Algorithm: Points earned per ride and aggregated over the month 
+**Example Algorithm:**
+Points earned per ride and aggregated over the month
+
 - Ride Duration
-   - Duration > 45 minutes: -2 pt
-   - 25 minutes < duration <= 45 minutes: -1 pt
-   - 15 minutes < duration <= 25 minutes: 0 pt
-   - 10 minutes < duration <= 15 minutes: 1 pt
-   - Duration <= 10 minutes: 1.5 pt
+   - Duration > 45 minutes: -3 pt
+   - 25 minutes < duration <= 45 minutes: -1.5 pt
+   - 15 minutes < duration <= 25 minutes: 0.0 pt
+   - 10 minutes < duration <= 15 minutes: +1.0 pt
+   - Duration <= 10 minutes: +2.0 pt
 - Season
-   - November, March, or April: 1 pt
-   - December, January, or February: 2 pt
-   - May-September and duration < 10 minutes: 0.5 pt
+   - November, March, or April: +1.0 pt
+   - December, January, or February: +2.0 pt
+   - May-September and duration < 10 minutes: +1.0 pt
+   - May-September and weekend: -0.5
 - Day Type
-   - Weekday and 6-10 a.m. start: 2 pt
-   - Weekday and 3-7 p.m. start: 1 pt
-   - Weekday and other time: 0.5 pt
-   - Weekend: 0 pt
+   - Weekday and 7-9 a.m. start: +2.0 pt
+   - Weekday and (6-7 a.m. or 9-10 a.m. start): +1.5 pt
+   - Weekday and 3-7 p.m. start: +1.0 pt
+   - Weekday and other time: +0.5 pt
+   - Weekend: 0.0 pt
 - Rideable Type
-   - November-April and electric: 0.5 pt
+   - November-April and electric: +1.0 pt
 - Geography
-   - Starts at a target station: 1 pt
-   - Ends at a target station: 1 pt
-   - Starts at an anti-target station: -1 pt
-   - Ends at an anti-target station: -1 pt
-   - Start station = end station: -1 pt
+   - Starts at a target station: +1.5 pt
+   - Ends at a target station: +1.5 pt
+   - Starts at an anti-target station: -1.5 pt
+   - Ends at an anti-target station: -1.5 pt
+   - Start station = end station: -2.0 pt
 - Consistency (tracking individuals' behavior)
-   - 3+ rides with 2+ pts last month: x1.5 pts
-   - 3+ rides with 3+ pts last month: x2 pts
+   - 2-3 rides/month and avg pts >+ 3: 1.5x points
+   - 4+ rides/month and avg pts >+ 3: 2x points
 
+**Monthly Points**
 <6 points: No trial month offered
-6-14 points: 20% discount on 1 month trial membership ($9.59 for the month)
+   - Low conversion probability
+   - Tourists and low utility
+6-14 points: 25% discount on 1 month trial membership ($8.99 for the month)
+   - Moderate conversion probability
+   - Errand runners and occasional commuters
+   - Captures a high-recall segment likely to save with a membership
 15+ points: 50% discount on 1 month trial membership ($6.00 for the month)
+   - High conversion probability
+   - Frequent user and commuters
+   - Captures high-precision segment guaranteed to save with a membership
 
-Additional analysis is needed to identify whether this promotion should be limited to the winter phase. If the high volume of casual summer rides represents repeat customers, it could lead to a notable drop in summer revenue from casuals using the discounted trial without intending to purchase an annual membership. If the high volume is mostly from unique users, the promotion is unlikely to cut into revenue severely.
+Additional analysis is needed to identify whether this promotion should be limited to the winter phase. If the high volume of casual summer rides represents repeat customers, it could lead to a notable drop in summer revenue from casuals using the discounted trial without intending to purchase an annual membership. If the high volume is mostly from unique users, the promotion is unlikely to affect revenue severely.
 
 ### Limitations
 
