@@ -18,7 +18,7 @@ Accelerate revenue and annual membership growth by analyzing aggregate trip metr
 
 ### Data Source
 
-The [raw data source](https://divvy-tripdata.s3.amazonaws.com/index.html), stripped of personal identifying information, is publicly available where Divvy, the real-world counterpart to the fictional company, publishes their records from June 1, 2020 to present. It is available through Motivate International Inc. under this [license](https://divvybikes.com/data-license-agreement). The raw data used in this project specifically is also available in a zipped format through this [link](https://drive.google.com/file/d/15kq_08r88PqiFFRycjoh1DGF9TfPrnz5/view?usp=sharing).
+The [raw data source](https://divvy-tripdata.s3.amazonaws.com/index.html), stripped of personal identifying information, is publicly available where Divvy, the real-world counterpart to the fictional company, publishes their records from June 1, 2020 to present. It is available through Motivate International Inc. under this [license](https://divvybikes.com/data-license-agreement). The raw data used in this project specifically is also available in a zipped format through this [link](https://drive.google.com/file/d/1q8HdW4d1rjG7KzZewwB8Yb_bmbnobJtk/view?usp=sharing).
 
 ### Primary Tools
 
@@ -33,7 +33,7 @@ The [raw data source](https://divvy-tripdata.s3.amazonaws.com/index.html), strip
 
 ## Data Cleaning
 
-The executable queries are located in the [/scripts_and_queries/02_data_cleaning.sql](./scripts_and_queries/02_data_cleaning.sql) file. The results and thought process can be found in the [/notebooks/analytical-log.md](./notebooks/analytical-log.md##-Step-3:-Process) file.
+The executable queries are located in the [/scripts_and_queries/02_data_cleaning.sql](./scripts_and_queries/02_data_cleaning.sql) file. The results and thought process can be found in the [/notebooks/analytical-log.md](https://github.com/william-rivers/Ride-Share-Membership-Growth-Marketing-Analysis/blob/main/notebooks/analytical-log.md#step-3-process) file.
 
 ### Core Data Quality Operations
 
@@ -47,7 +47,7 @@ The executable queries are located in the [/scripts_and_queries/02_data_cleaning
 
 ## Analysis
 
-The executable queries are located in the [/scripts_and_queries/03_business_analysis.sql](./scripts_and_queries/03_business_analysis.sql) file. The results and thought process can be found in the [/notebooks/analytical-log.md](./notebooks/analytical-log.md##-Step-4:-Analyze) file.
+The executable queries are located in the [/scripts_and_queries/03_business_analysis.sql](./scripts_and_queries/03_business_analysis.sql) file. The results and thought process can be found in the [/notebooks/analytical-log.md](https://github.com/william-rivers/Ride-Share-Membership-Growth-Marketing-Analysis/blob/main/notebooks/analytical-log.md#step-4-analyze) file.
 
 ### Primary Focus
 
@@ -68,7 +68,7 @@ Rather than deploying a broad marketing campaign across the entire casual footpr
 4) Geography: Rides tend to be more spread out across the full service range
    - Especially true on weekends
    - Favor inland locations more than casuals
-   - 47 target stations identified
+   - [47 target stations](https://github.com/william-rivers/Ride-Share-Membership-Growth-Marketing-Analysis/blob/main/notebooks/analytical-log.md#46-popular-station-analysis) identified
 5) Overall: Very little variation in usage patterns
 
 **Casuals**
@@ -88,7 +88,7 @@ Rather than deploying a broad marketing campaign across the entire casual footpr
 
 1) **The Short-Duration Commuters:** Annual members heavily favor taking short-duration, utility-driven rides. A significant cohort of casual riders mirrors this behavior, which marks them as likely converts.
 2) **The Rush-Hour Commuters:** Temporal analysis shows that although the highest casual usage is on the weekends, a distinct segment of casual rides occur during traditional weekday rush hours (6:00 AM - 10:00 AM and 3:00 PM - 7:00 PM), matching member peak usage hours. The member-dominated morning rush identifies likely converts and the shared evening rush captures the highest traffic periods.
-3) **The Inland Corridor:** Geographic mapping isolates a divide between members and casual users: casual rides concentrate more heavily along the coast while member rides concentrate more heavily inland. Analysis identified [47 stations](./notebooks/analytical-log.md###-4.6-Popular-Station-Analysis) that are member-dominated despite high popularity with casual users.
+3) **The Inland Corridor:** Geographic mapping isolates a divide between members and casual users: casual rides concentrate more heavily along the coast while member rides concentrate more heavily inland. Analysis identified [47 stations](https://github.com/william-rivers/Ride-Share-Membership-Growth-Marketing-Analysis/blob/main/notebooks/analytical-log.md#46-popular-station-analysis) that are member-dominated despite high popularity with casual users.
 4) **The Seasonal Pivot:** Casual riders still active during winter months (December-February) are displaying member-like behavior since casual rides dropped to 1/10th of their peak usage during the winter months while member rides only dropped to 1/4th of their peak. Additionally, while the rest of the year matches the standard member ratio of 1:2 classic-to-electric rides, winter casual usage shifts to a 1:3 ratio. This indicates a high willingness to pay a premium for speed and cold-weather convenience.
 
 ### Campaign Timing
@@ -154,7 +154,7 @@ The extreme drop in casual usage during the winter months identifies a lower vol
 
 #### Deploy Localized Out-of-Home (OOH) Station Marketing
 
-Establish localized brand equity by deploying physical marketing (e.g. vinyl station wraps, dock signage, or digital terminal displays) at the 24 key stations identified during the analysis. 
+Establish localized brand equity by deploying physical marketing (e.g. vinyl station wraps, dock signage, or digital terminal displays) at the 47 key stations identified during the analysis. 
 
 ### Offer Dynamic Membership Trial Discounts
 
