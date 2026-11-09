@@ -1989,7 +1989,9 @@ Marketing should focus on targeting casuals that take rides:
    - Heavy focus on rides between 6-9 am time frame which is dominated
    - Slight focus on the 4-6 pm time frame which is used heavy by both groups
 3) during the Winter
-   - Slight focus on electric bike rides which are used more commonly by casuals during Winter (willing to pay a premium for convenience)
+   - Slight focus on electric bike rides
+     - More commonly used by casuals during Winter (willing to pay a premium for convenience)
+     - More closely match member geographic distribution
 4) from/to stations that fall into member dominated areas
 
 A major finding was that members are very consistent with their usage as a group. If I were able to track specific 
@@ -2020,8 +2022,8 @@ SELECT --Build list of start points
   member_casual,
   CASE WHEN month BETWEEN 3 AND 5 THEN 'Spring'
     WHEN month BETWEEN 6 AND 8 THEN 'Summer'
-    WHEN month BETWEEN 9 AND 11 THEN 'Winter'
-    ELSE 'Fall'
+    WHEN month BETWEEN 9 AND 11 THEN 'Fall'
+    ELSE 'Winter'
   END AS geo_season, --Reduced number of aggregated points from 12x to 4x
   CASE WHEN day_of_week BETWEEN 2 AND 6 THEN 'Weekday'
     ELSE 'Weekend'
@@ -2039,9 +2041,9 @@ SELECT --Build list of end points
   member_casual,
   CASE WHEN month BETWEEN 3 AND 5 THEN 'Spring'
     WHEN month BETWEEN 6 AND 8 THEN 'Summer'
-    WHEN month BETWEEN 9 AND 11 THEN 'Winter'
-    ELSE 'Fall'
-  END AS geo_season, --Reduced number of aggregated points from 12x to 4x
+    WHEN month BETWEEN 9 AND 11 THEN 'Fall'
+    ELSE 'Winter'
+  END AS season, --Reduced number of aggregated points from 12x to 4x
   CASE WHEN day_of_week BETWEEN 2 AND 6 THEN 'Weekday'
     ELSE 'Weekend'
   END AS day_type, --Reduced number of aggregated points from 7x to 2x
@@ -2049,7 +2051,7 @@ SELECT --Build list of end points
   COUNT(*) AS num_rides --Keeps the intensity in the heatmap
 FROM `ride-share-500415.Ride_Share_Marketing_Analysis.cleaned_combined_ride_share`
 GROUP BY 1,2,3,4,5,6,7
-HAVING COUNT(*) > 5 --Drops some of the background noise;
+HAVING COUNT(*) > 5 --Drops some of the background noise to limit number of points;
 ```
 
 ### 5.2 Final Products
