@@ -2024,7 +2024,7 @@ SELECT --Build list of start points
     WHEN month BETWEEN 6 AND 8 THEN 'Summer'
     WHEN month BETWEEN 9 AND 11 THEN 'Fall'
     ELSE 'Winter'
-  END AS geo_season, --Reduced number of aggregated points from 12x to 4x
+  END AS season, --Reduced number of aggregated points from 12x to 4x
   CASE WHEN day_of_week BETWEEN 2 AND 6 THEN 'Weekday'
     ELSE 'Weekend'
   END AS day_type, --Reduced number of aggregated points from 7x to 2x
