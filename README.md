@@ -68,7 +68,7 @@ Rather than deploying a broad marketing campaign across the entire casual footpr
 4) Geography: Rides tend to be more spread out across the full service range
    - Especially true on weekends
    - Favor inland locations more than casuals
-   - [47 target stations](https://github.com/william-rivers/Ride-Share-Membership-Growth-Marketing-Analysis/blob/main/notebooks/analytical-log.md#46-popular-station-analysis) identified
+   - [47 target stations](https://github.com/william-rivers/Ride-Share-Membership-Growth-Marketing-Analysis/blob/main/notebooks/analytical-log.md#46-popular-station-analysis) identified based on volume and member:casual ratio
 5) Overall: Very little variation in usage patterns
 
 **Casuals**
@@ -81,7 +81,7 @@ Rather than deploying a broad marketing campaign across the entire casual footpr
    - Classic bike usage roughly doubles on weekends
 4) Geography: Rides tend to be more concentrated in the same geographic area
    - Coastal areas in particular are highly popular
-   - 9 anti-target stations identified
+   - 9 anti-target stations identified based on volume and casual:member ratio
 6) Overall: Large amounts of variation in usage pattern based on many factors
 
 ### Low Friction Target Segments
@@ -142,6 +142,8 @@ The extreme drop in casual usage during the winter months identifies a lower vol
 
 #### Implement In-App Loss Aversion Triggers
 
+At the end of each qualifying ride (aligned with member behavior), display loss aversion triggers to prompt thought about the value proposition represented by the membership. The annual membership breaks even with single ride use at a very low number of rides per month. This information needs to be presented in an easy to interpret format so that casual users can easily identify the value of an annual membership without any calculations or logical thinking.
+
 -  **General:** A membership would have saved you $X.XX on this ride
 -  **General:** This month you would have saved $X.XX with a membership
 -  **General:** Did you know the annual membership costs less than $12/month?
@@ -154,11 +156,11 @@ The extreme drop in casual usage during the winter months identifies a lower vol
 
 #### Deploy Localized Out-of-Home (OOH) Station Marketing
 
-Establish localized brand equity by deploying physical marketing (e.g. vinyl station wraps, dock signage, or digital terminal displays) at the 47 key stations identified during the analysis. 
+Establish localized brand equity by deploying physical marketing (e.g. vinyl station wraps, dock signage, or digital terminal displays) at the 47 key stations identified during the analysis. These advertisements should be focused on the annual membership's value at even low volume and the citywide coverage.
 
 ### Offer Dynamic Membership Trial Discounts
 
-Establish a system to identify casual users most likely to convert (most utility-driving rides) and lower their barrier to conversion for the new year by offering a small discounted trial. At the beginning of the year, people chose new habits or goals often related to health and exercise. Lowering the barrier encourages people to trial a healthy mode of transportation or exercise.
+Establish a system to identify casual users most likely to convert (most utility-driving rides) and lower their barrier to conversion by offering a short discounted trial. A special consideration for the winter phase is that people often chose new habits or goals at the start of the new year. Lowering the barrier to entry encourages people to trial a healthy mode of transportation or exercise at a time that  they may be searching for exactly that.
 
 **Example Algorithm:**
 Points earned per ride and aggregated over the month
@@ -193,6 +195,7 @@ Points earned per ride and aggregated over the month
    - 4+ rides/month and avg pts >+ 3: 2x points
 
 **Monthly Points**
+
 <6 points: No trial month offered
    - Low conversion probability
    - Tourists and low utility
