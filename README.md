@@ -2,6 +2,13 @@
 
 A project focused on identifying differences between members and casual users in order to convert casuals into members.
 
+## Executive Summary and Key Business Findings
+
+- **Behavioral Segmentation:** Isolated three core differentiators that separate annual members from casual riders: **trip duration** (shorter, utility-driven vs longer, recreational rides), **temporal usage** (weekday rush hour vs weekend surges), and **seasonal resilience**.
+- **Geospatial Marketing Optimization:** Identified **47 target stations** where high casual rider volume (**>10,000 annual rides**) overlaps with high member:casual ratio (**>1.2 member rides for every casual ride**) to maximize marketing ROI, filtering out 9 tourist dominated anti-target stations.
+- **Biphasic Campaign Strategy:** Designed a go-to-market strategy targeting **peak volume acquisition (May-August)**, when >80% of casual rides occur, and **targeted conversion (December-February)**, when a low volume of casual riders closely mirror member usage behaviors and shift towards e-bike reliance (1:3 ratio).
+- **Pricing Breakeven and Loss Aversion Triggers:** Quantified exact profit thresholds (**3-4 classic rides/month** or **2-3 electric rides/month**) to guide development of **in-app loss aversion triggers** and a **heuristic behavioral scoring framework** for personalized trial discounts.
+
 ## Background
 A bike-share company operates a fleet of several thousand geotracked bicycles across a network of stations spread throughout Chicago. The director of marketing believes the company’s future success depends on maximizing the number of annual memberships. Therefore, we need to understand how casual riders and members use bikes to design a new marketing strategy for converting casual riders into annual members.
 
@@ -37,9 +44,9 @@ The executable queries are located in the [/scripts_and_queries/02_data_cleaning
 
 ### Core Data Quality Operations
 
-1) Deduplication: Identified and removed using GROUP BY and HAVING
-2) Resolved Incomplete Records: Filled several thousand null station names and ids with the nearest station within 50 meters
-3) Verified Data Sanity:
+1) [Deduplication](https://github.com/william-rivers/Ride-Share-Membership-Growth-Marketing-Analysis/blob/main/notebooks/analytical-log.md#33-removing-duplicate-rides): Identified and removed using GROUP BY and HAVING
+2) [Resolved Incomplete Records](https://github.com/william-rivers/Ride-Share-Membership-Growth-Marketing-Analysis/blob/main/notebooks/analytical-log.md#35-cleaning-station-id-station-name-latitude-and-longitude): Filled several thousand null station names and ids with the nearest station within 50 meters
+3) [Verified Data Sanity](https://github.com/william-rivers/Ride-Share-Membership-Growth-Marketing-Analysis/blob/main/notebooks/analytical-log.md#35-cleaning-station-id-station-name-latitude-and-longitude):
    - Removed rides with negative durations or zero duration
    - Removed rides with 0-2 min durations if they did not travel at least 50 meters or change stations
    - Removed classic bike rides that averaged more than 8.5 meters per second (19.0 mph)
@@ -162,7 +169,7 @@ Establish localized brand equity by deploying physical marketing (e.g. vinyl sta
 
 Establish a system to identify casual users most likely to convert (most utility-driving rides) and lower their barrier to conversion by offering a short discounted trial. A special consideration for the winter phase is that people often chose new habits or goals at the start of the new year. Lowering the barrier to entry encourages people to trial a healthy mode of transportation or exercise at a time that  they may be searching for exactly that.
 
-**Example Algorithm:**
+**Example Heuristic Framework (Baseline for A/B Testing)**
 Points earned per ride and aggregated over the month
 
 - Ride Duration
@@ -191,8 +198,8 @@ Points earned per ride and aggregated over the month
    - Ends at an anti-target station: -1.5 pt
    - Start station = end station: -2.0 pt
 - Consistency (tracking individuals' behavior)
-   - 2-3 rides/month and avg pts >+ 3: 1.5x points
-   - 4+ rides/month and avg pts >+ 3: 2x points
+   - 2-3 rides/month and avg pts >+ 3.0: 1.5x points
+   - 4+ rides/month and avg pts >+ 3.0: 2x points
 
 **Monthly Points**
 
@@ -207,16 +214,16 @@ Points earned per ride and aggregated over the month
 
 15+ points: 50% discount on 1 month trial membership ($6.00 for the month)
    - High conversion probability
-   - Frequent user and commuters
+   - Frequent users and commuters
    - Captures high-alignment segment in need of a membership
 
 Additional analysis is needed to identify whether this promotion should be limited to the winter phase. If the high volume of casual summer rides represents repeat customers, it could lead to a notable drop in summer revenue from casuals using the discounted trial without intending to purchase an annual membership. If the high volume is mostly from unique users, the promotion is unlikely to affect revenue severely.
 
 ### Limitations
 
-* No Customer IDs: The dataset lacks the unique customer IDs required to track individuals longitudinal usage.
+* No Customer IDs or Conversion Flags: The dataset lacks the unique customer IDs required to track individuals longitudinal usage or conversion flags to identify a casual that later purchased a membership.
 * No Demographic Data:  The dataset lacks the demographic profiles required to track cohorts of users.
-* Financial Redaction: The dataset lacks exact pricing tables, dynamic surge rates, and operational costs required to determine a precise Return on Investment (ROI) forecast for the campaign.
+* Financial Redaction: The dataset lacks exact pricing tables, dynamic surge rates, and operational costs required to determine a precise ROI forecast for the campaign.
 
 ### Next Steps
 
@@ -227,5 +234,5 @@ Additional analysis is needed to identify whether this promotion should be limit
 4) Use k-means clustering, random forest, or related machine learning concepts to optimize the algorithm for identifying likely converts
    - Planned future data science addendum
 
-  
+
 *This project dataset was suggested by the Google Data Analytics Certificate as part of the capstone project.
