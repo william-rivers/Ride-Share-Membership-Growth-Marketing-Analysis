@@ -6,7 +6,7 @@ A project focused on identifying differences between members and casual users in
 
 - **Behavioral Segmentation:** Isolated three core differentiators that separate annual members from casual riders: **trip duration** (shorter, utility-driven vs longer, recreational rides), **temporal usage** (weekday rush hour vs weekend surges), and **seasonal resilience**.
 - **Geospatial Marketing Optimization:** Identified **47 target stations** where high casual rider volume (**>10,000 annual rides**) overlaps with high member:casual ratio (**>1.2 member rides for every casual ride**) to maximize marketing ROI, filtering out 9 tourist dominated anti-target stations.
-- **Biphasic Campaign Strategy:** Designed a go-to-market strategy targeting **peak volume acquisition (May-August)**, when >80% of casual rides occur, and **targeted conversion (December-February)**, when a low volume of casual riders closely mirror member usage behaviors and shift towards e-bike reliance (1:3 ratio).
+- **Biphasic Campaign Strategy:** Designed a go-to-market strategy targeting **peak volume acquisition (May-August)**, when >80% of casual rides occur, and **targeted conversion (December-February)**, when a low volume of casual riders closely mirrors member usage behaviors and shift towards e-bike reliance (1:3 ratio), signaling willingness to pay for convenience.
 - **Pricing Breakeven and Loss Aversion Triggers:** Quantified exact profit thresholds (**3-4 classic rides/month** or **2-3 electric rides/month**) to guide development of **in-app loss aversion triggers** and a **heuristic behavioral scoring framework** for personalized trial discounts.
 
 ## Background
