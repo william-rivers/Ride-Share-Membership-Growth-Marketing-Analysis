@@ -1979,7 +1979,66 @@ Filtering for any grids that have at least 3 unique coordinates gave no results.
 to 2 decimals creates grids approximately one square kilometer in area and there is unrealistically large volume 
 in small areas, the data is not detailed enough to identify new station possibilities.
 
-### 4.8 Summary/Notable Insights
+### 4.8 Statistical Hypothesis Testing
+
+To ensure that the identified behavioral differences observed in my earlier analysis were not caused by random variation, I 
+conducted formal hypothesis testing using Python using `scipy.stats` and `statsmodels` across the cleaned dataset. This 
+included all 5,757,898 rides split into 3,701,488 member rides and 2,056,450 casual rides.
+
+I used one-sided Mann-Whitney U tests to screen duration differences for significance and I used one-sided Two Proportion z 
+tests to evaluate differences in weekday, e-bike, and rush hour usage ratios. Because of my extremely large sample sizes, even 
+small changes are likely to show as significant, so I also included rank-biserial correlation (r<sub>rb</sub>) on my U tests 
+and Cohen's h on my Z tests to determine the practical effect on user behavior.
+
+To compensate for the fact that running multiple tests increase the risk of false positives (claiming a difference when there 
+is not one), I separated the tests into two families (U tests and Z tests) and included Bonferroni Correction to keep the Family 
+Wise Error Rate under alpha of 0.05. For Family 1 (2 U tests), that led to adjusted alphas of 0.025. For Family 2 (4 Z tests), 
+that led to adjusted alphas of 0.0125. I anticipated this segmentation not being strictly necessary due to the extremely large 
+sample sizes that should produce extremely low p-values.
+
+The complete Python implementation and results area available in [/notebooks/02_statistical_analysis.ipynb](./notebooks/02_statistical_analysis.ipynb).
+
+#### Family 1: Ride Duration Comparisons (Mann-Whitney U Tests)
+
+| Hypothesis Tested                                      | Group 1 Median (IQR) | Group 2 Median (IQR)  | U Statistic          | Adjusted p-value | r<sub>rb</sub> | Practical Effect |
+|--------------------------------------------------------|----------------------|-----------------------|----------------------|------------------|----------------|------------------|
+| Test 1: Overall Duration (Members < Casuals)           | 8.68 min (9.55 min)  | 11.47 min (14.58 min) | 3.07*10<sup>12</sup> | <0.0001          | -0.1941        | Small            |
+| Test 2: Seasonal Casual Duration (Winter < Non-Winter) | 7.62 min (8.60 min)  | 11.70 min (14.80 min) | 6.68*10<sup>10</sup> | <0.0001          | -0.2621        | Small            |
+
+| r<sub>rb</sub> Range         | Practical Effect |
+|------------------------------|------------------|
+| r<sub>rb</sub> < 0.10        | Negligible       |
+| 0.10<= r<sub>rb</sub> < 0.30 | Small            |
+| 0.30<= r<sub>rb</sub> < 0.50 | Moderate         |
+| r<sub>rb</sub> >= 0.50       | Large            |
+
+#### Family 2: Ride Volume Rate Comparisions (Two Proportion Z Tests)
+
+| Hypothesis Tested                                         | Group 1 Ratio | Group 2 Ratio | Z Statistic | Adjusted p-value | Cohen's h | Practical Effect |
+|-----------------------------------------------------------|---------------|---------------|-------------|------------------|-----------|------------------|
+| Test 1: Weekday Ride Ratio (Members > Casuals)            | 76.45%        | 62.29%        | 360.26      | < 0.001          | 0.3091    | Small            |
+| Test 2: Casual E-Bike Ratio (Winter/Spring > Summer/Fall) | 73.31%        | 66.59%        | 91.54       | < 0.001          | 0.1467    | Negligible       |
+| Test 3: Morning Rush (7-9 AM) Ratio (Members > Casuals)   | 12.92%        | 6.01%         | 259.75      | < 0.001          | 0.2401    | Small            |
+| Test 4: Morning Rush (6-10 AM) Ratio (Members > Casuals)  | 20.39%        | 10.83%        | 292.89      | < 0.001          | 0.2664    | Small            |
+
+| Cohen's h Range  | Practical Effect |
+|------------------|------------------|
+| h < 0.20         | Negligible       |
+| 0.20 <= h < 0.50 | Small            |
+| 0.50 <= h < 0.8  | Moderate         |
+| h >= 0.80        | Large            |
+
+#### Key Statistical Takeaways
+
+1) **Validated Behavioral Profiles:** Compared to casuals, members exhibit shorter ride durations (8.68 min vs 11.47 min,
+r<sub>rb</sub> = -0.1941), a higher weekday ride ratio (76.45% vs 62.29%, h = 0.3091), and approximately double the morning
+ride volume across for both 7-9 AM (12.92% vs 6.01%, h = 0.2401) and 6-10 AM (20.39% vs 10.83%, h = 0.2664).
+2) **Confirmed Casual Seasonal Shifts:** Winter casual durations drop significantly lower than non-winter casual durations (7.62
+min vs 11.70 min, r<sub>rb</sub> = -0.2621).
+3) **Avoided Overvaluing E-Bike Ratio:** Casual users shift to favor e-bikes in colder months (73.31% vs 66.59%) but the effect
+is negligible (h = 0.1467).
+
+### 4.9 Summary/Notable Insights
 
 Marketing should focus on targeting casuals that take rides:
 
@@ -1987,7 +2046,7 @@ Marketing should focus on targeting casuals that take rides:
    - Especially May-September where the casual duration is highest   - 
 2) during weekdays
    - Heavy focus on rides between 6-9 am time frame which is dominated
-   - Slight focus on the 4-6 pm time frame which is used heavy by both groups
+   - Slight focus on the 3-7 pm time frame which is used heavy by both groups
 3) during the Winter
    - Slight focus on electric bike rides
      - More commonly used by casuals during Winter (willing to pay a premium for convenience)
@@ -1997,7 +2056,11 @@ Marketing should focus on targeting casuals that take rides:
 A major finding was that members are very consistent with their usage as a group. If I were able to track specific 
 individuals, I would want to identify and target any casuals that make consistent use of the service.
 
-The marketing campaign should be biphasic. Phase 1 runs between May and August when there are more casuals active even though they are not displaying "member-like" behavior for the most part. During this phase, we should primarily target the users behaving most like members and emphasize the potential savings at even light use for unlikely converts. Phase 2 runs between December and February when there is low casual activity but it is much more consistent with member behavior.
+The marketing campaign should be biphasic. Phase 1 runs between May and August when there are more casuals active 
+even though they are not displaying "member-like" behavior for the most part. During this phase, we should primarily 
+target the users behaving most like members and emphasize the potential savings at even light use for unlikely converts. 
+Phase 2 runs between December and February when there is low casual activity but it is much more consistent with member 
+behavior.
 
 In both phases, we should combine advertising through the app and OOH marketing at key stations to maximize exposure.
 
@@ -2189,7 +2252,7 @@ Formula:
 1) Ride Duration: Higher average year-long
    - Duration rapidly increases as weather warms and rapidly drops as weather cools
 2) Season: Higher proportion of the rides between May and October
-   - Shift toward using electric bikes more often during Winter
+   - Shift toward using electric bikes more often during Winter (negligible practical effect)
 3) Day Type: Favor weekends over weekdays
    - Weekdays only show rides clustered during the evening rush hour (3:00 PM - 7:00 PM)
    - Classic bike usage roughly doubles on weekends
@@ -2219,17 +2282,21 @@ Formula:
 
 **Deploy Localized Out-of-Home (OOH) Station Marketing**
 
-Establish localized brand equity by deploying physical marketing (e.g. vinyl station wraps, dock signage, or digital terminal displays) at the 24 key stations identified during the analysis. 
+Establish localized brand equity by deploying physical marketing (e.g. vinyl station wraps, dock signage, or digital 
+terminal displays) at the 47 key stations identified during the analysis. 
 
 #### Offer Dynamic Membership Trial Discounts
 
-Establish a system to identify casual users most likely to convert (most utility-driving rides) and lower their barrier to conversion for the new year by offering a small discounted trial. At the beginning of the year, people chose new habits or goals often related to health and exercise. Lowering the barrier encourages people to trial a healthy mode of transportation or exercise.
+Establish a system to identify casual users most likely to convert (most utility-driving rides) and lower their barrier to 
+conversion for the new year by offering a small discounted trial. At the beginning of the year, people chose new habits or 
+goals often related to health and exercise. Lowering the barrier encourages people to trial a healthy mode of transportation 
+or exercise.
 
 **Example Algorithm:**
 Points earned per ride and aggregated over the month
 
 - Ride Duration
-   - Duration > 45 minutes: -3 pt
+   - Duration > 45 minutes: -3.0 pt
    - 25 minutes < duration <= 45 minutes: -1.5 pt
    - 15 minutes < duration <= 25 minutes: 0.0 pt
    - 10 minutes < duration <= 15 minutes: +1.0 pt
@@ -2240,10 +2307,10 @@ Points earned per ride and aggregated over the month
    - May-September and duration < 10 minutes: +1.0 pt
    - May-September and weekend: -0.5
 - Day Type
-   - Weekday and 7-9 a.m. start: +2.0 pt
-   - Weekday and (6-7 a.m. or 9-10 a.m. start): +1.5 pt
-   - Weekday and 3-7 p.m. start: +1.0 pt
-   - Weekday and other time: +0.5 pt
+   - Weekday and 7-9 a.m. start: +2.5 pt
+   - Weekday and (6-7 a.m. or 9-10 a.m. start): +2.0 pt
+   - Weekday and 3-7 p.m. start: +1.5 pt
+   - Weekday and other time: +1.0 pt
    - Weekend: 0.0 pt
 - Rideable Type
    - November-April and electric: +1.0 pt
@@ -2254,29 +2321,34 @@ Points earned per ride and aggregated over the month
    - Ends at an anti-target station: -1.5 pt
    - Start station = end station: -2.0 pt
 - Consistency (tracking individuals' behavior)
-   - 2-3 rides/month and avg pts >+ 3: 1.5x points
-   - 4+ rides/month and avg pts >+ 3: 2x points
+   - 2-3 rides/month and avg pts >= 3.0: 1.5x points
+   - 4+ rides/month and avg pts >= 3.0: 2x points
 
 **Monthly Points**
 <6 points: No trial month offered
    - Low conversion probability
-   - Tourists and low utility
+   - Tourists and low utility users
 6-14 points: 25% discount on 1 month trial membership ($8.99 for the month)
    - Moderate conversion probability
    - Errand runners and occasional commuters
    - Captures a high-recall segment likely to save with a membership
 15+ points: 50% discount on 1 month trial membership ($6.00 for the month)
    - High conversion probability
-   - Frequent user and commuters
+   - Frequent users and commuters
    - Captures high-precision segment guaranteed to save with a membership
 
-Additional analysis is needed to identify whether this promotion should be limited to the winter phase. If the high volume of casual summer rides represents repeat customers, it could lead to a notable drop in summer revenue from casuals using the discounted trial without intending to purchase an annual membership. If the high volume is mostly from unique users, the promotion is unlikely to affect revenue severely.
+Additional analysis is needed to identify whether this promotion should be limited to the winter phase. If the high volume of 
+casual summer rides represents repeat customers, it could lead to a notable drop in summer revenue from casuals using the 
+discounted trial without intending to purchase an annual membership. If the high volume is mostly from unique users, the 
+promotion is unlikely to affect revenue severely.
 
 #### Limitations
 
-* No Customer IDs: The dataset lacks the unique customer IDs required to track individuals longitudinal usage.
-* No Demographic Data:  The dataset lacks the demographic profiles required to track cohorts of users.
-* Financial Redaction: The dataset lacks exact pricing tables, dynamic surge rates, and operational costs required to determine a precise Return on Investment (ROI) forecast for the campaign.
+- No Customer IDs or Conversion Flags: The dataset lacks the unique customer IDs required to track individuals longitudinal usage
+or conversion flags to identify a casual that later purchased a membership.
+- No Demographic Data:  The dataset lacks the demographic profiles required to track cohorts of users.
+- Financial Redaction: The dataset lacks exact pricing tables, dynamic surge rates, and operational costs required to determine a
+precise Return on Investment (ROI) forecast for the campaign.
 
 #### Next Steps
 
