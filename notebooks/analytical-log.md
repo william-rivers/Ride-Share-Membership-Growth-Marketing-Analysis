@@ -1996,7 +1996,7 @@ Wise Error Rate under alpha of 0.05. For Family 1 (2 U tests), that led to adjus
 that led to adjusted alphas of 0.0125. I anticipated this segmentation not being strictly necessary due to the extremely large 
 sample sizes that should produce extremely low p-values.
 
-The complete Python implementation and results area available in [/notebooks/02_statistical_analysis.ipynb](./notebooks/02_statistical_analysis.ipynb).
+The complete Python implementation and results area available in [/notebooks/02_statistical_analysis.ipynb](./02_statistical_analysis.ipynb).
 
 #### Family 1: Ride Duration Comparisons (Mann-Whitney U Tests)
 
